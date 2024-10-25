@@ -146,56 +146,32 @@ $(document).on("change", "tr[data-repeat-group-id^=1675149367125]", function(eve
     if (tmp !== "MeansOfPayment") {
         var tmp2 = tmp.split("_")[1];
         var MeansOfPayment1 = $("#MeansOfPayment_" + tmp2).val();
-        var NameOfAccount1 = $("#NameOfAccount_" + tmp2);
-        var AccountNum1 = $("#AccountNum_" + tmp2);
         var NameOfBank1 = $("#NameOfBank_" + tmp2);
 
         // 초기화
-        NameOfAccount1.prop('readonly', false);
-        AccountNum1.prop('readonly', false);
         NameOfBank1.prop('readonly', false);
 
         if (MeansOfPayment1 === '2') {
             // MeansOfPayment1 값이 2라면 '해당없음'으로 설정하고 읽기 전용으로 설정
-            NameOfAccount1.val('해당없음').prop('readonly', true);
-            AccountNum1.val('해당없음').prop('readonly', true);
             NameOfBank1.val('해당없음').prop('readonly', true);
         } else {
             // MeansOfPayment1 값이 2가 아니라면 사용자가 입력 가능하도록 설정
-            if (NameOfAccount1.val() === '해당없음') {
-                NameOfAccount1.val(''); // 초기화
-            }
-            if (AccountNum1.val() === '해당없음') {
-                AccountNum1.val(''); // 초기화
-            }
             if (NameOfBank1.val() === '해당없음') {
                 NameOfBank1.val(''); // 초기화
             }
         }
     } else {
         var MeansOfPayment = $("#MeansOfPayment").val();
-        var NameOfAccount = $("#NameOfAccount");
-        var AccountNum = $("#AccountNum");
         var NameOfBank = $("#NameOfBank");
 
         // 초기화
-        NameOfAccount.prop('readonly', false);
-        AccountNum.prop('readonly', false);
         NameOfBank.prop('readonly', false);
 
         if (MeansOfPayment === '2') {
             // MeansOfPayment 값이 2라면 '해당없음'으로 설정하고 읽기 전용으로 설정
-            NameOfAccount.val('해당없음').prop('readonly', true);
-            AccountNum.val('해당없음').prop('readonly', true);
             NameOfBank.val('해당없음').prop('readonly', true);
         } else {
             // MeansOfPayment 값이 2가 아니라면 사용자가 입력 가능하도록 설정
-            if (NameOfAccount.val() === '해당없음') {
-                NameOfAccount.val(''); // 초기화
-            }
-            if (AccountNum.val() === '해당없음') {
-                AccountNum.val(''); // 초기화
-            }
             if (NameOfBank.val() === '해당없음') {
                 NameOfBank.val(''); // 초기화
             }

@@ -1,0 +1,62 @@
+// 문서 진입할때 적용할 내용
+$(document).ready(function() {
+    $('#eapDocReg_docSubject').attr('disabled',true); /*제목입력잠금*/
+});
+$("#eapDocReg_docSubject").attr("placeholder", "아래 기입된 사업명 및 세부내용에 따라 자동입력됩니다.");
+
+$("#p1").attr("placeholder", "예) 차세대 지방재정관리시스템 구축사업");
+$("#p2").attr("placeholder", "예) 한국지역정보개발원 재정정보부");
+$("#p3").attr("placeholder", "예) 솔리데오시스템즈");
+$("task").attr("placeholder", "제안작성인력 목록이 아닌 실제 사업수행인력을 기재해주세요.");
+
+// 각 아이디 값마다 change 이벤트 적용
+
+$('#p1').change(function() {
+    getInputValue();
+});
+
+$('#p2').change(function() {
+    getInputValue();
+});
+
+$('#p3').change(function(){
+    getInputValue();
+});
+
+function getInputValue() {
+    
+       $('#eapDocReg_docSubject').attr('disabled',true); /*제목입력잠금*/
+
+		var docSubject = $('#eapDocReg_docSubject').val();
+		var a = $('#p1').val();
+		var b = $('#p2').val();
+		var c = $('#p3').val();
+
+        $('#eapDocReg_docSubject').val(b + " " + a + " 사업제안참여(VRB) 요청의 건 (주관사 : " + c + ")" );
+        $('#eapDocReg_docSubject').focus();
+}
+
+$(document)
+.on("change", "input[id^=txtMM]", function() {setMM(this);})
+.on("focus", "input[id^=txtMM]", function() {setMM(this);})
+.on("blur", "input[id^=txtMM]", function() {setMM(this);});
+
+function setMM(eventTrgt){
+    var totMM = 0;
+    $("input[id^=txtMM]").each(function(idx, obj){ 
+        // 공수 필드 전체를 합산하여 값을 세팅함
+        totMM += Number($(obj).val().replace(/[^0-9.]/g, ""));
+        
+    });
+    $("#sumTotal").val(naon.string.formatComma(totMM.toFixed(1)));
+    fn_change_hangul_money();
+}
+
+$(document).on("click", "#repeat_del", function() { 
+    // 삭제버튼 클릭시 제일 마지막 행만 지워지므로 MM 합계만 다시 계산
+    var totMM = 0;
+    $("input[id^=txtMM]").each(function(idx, obj){ 
+        totMM += Number($(obj).val().replace(/[^0-9.]/g, ""));
+    });
+    $("#sumTotal").val(naon.string.formatComma(totMM.toFixed(1)));
+});

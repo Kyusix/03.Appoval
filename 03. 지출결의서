@@ -1,0 +1,204 @@
+// 문서 진입할때 적용할 내용
+$(document).ready(function() {
+    $('#eapDocReg_docSubject').attr('disabled',true); /*제목입력잠금*/
+});
+$("#eapDocReg_docSubject").attr("placeholder", "아래 기입된 관련사업 및 품목에 따라 자동입력됩니다.");
+
+
+// 각 아이디 값마다 change 이벤트 적용
+
+$('#p1').change(function() {
+    getInputValue();
+});
+
+$('#p3').change(function() {
+    getInputValue();
+});
+
+$('#p4').click(function(){
+    getInputValue();
+});
+
+function getInputValue() {
+    
+       $('#eapDocReg_docSubject').attr('disabled',true); /*제목입력잠금*/
+
+		var docSubject = $('#eapDocReg_docSubject').val();
+		var a = $('#p3').val();
+		var b = $('#p4').val();
+
+        $('#eapDocReg_docSubject').val(a + " 관련 " + b + "지급신청" );
+        $('#eapDocReg_docSubject').focus();
+}
+
+
+// 1 ~ 9 한글 표시
+var arrNumberWord = new Array("","일","이","삼","사","오","육","칠","팔","구");
+// 10, 100, 100 자리수 한글 표시
+var arrDigitWord = new  Array("","십","백","천");
+// 만단위 한글 표시
+var arrManWord = new  Array("","만","억", "조");
+
+var usdTxt = '해외 미화달러 결제 건(현재환율 기타사항 기재)';
+
+$("#date_payment").prop("disabled", true);
+$("#numPrice").attr("disabled", true);
+$("#korPrice").attr("disabled", true);
+$("#psnTotPrice").attr("disabled", true);
+
+$("#p3").attr("placeholder", "예) 여성가족부 위기청소년 통합지원정보시스템 구축(내부구매 건은 '메타빌드 본사/연구소' 기입)");
+
+
+function fn_change_hangul_money()
+{
+    var crncy = $("#select_WonUSD").val();
+    var num_value = $("#psnTotPrice").val().replace(/,/g, '');
+   // var num_value = txt_id.value.replace(/,/g, '');
+    var num_length = num_value.length;
+
+    if(isNaN(num_value) === true){
+          return;}
+    
+    var han_value = "";
+    var man_count = 0;      // 만단위 0이 아닌 금액 카운트.
+
+    for(i=0; i < num_value.length; i++)
+    {
+          // 1단위의 문자로 표시.. (0은 제외)
+          var strTextWord = arrNumberWord[num_value.charAt(i)];
+          // 0이 아닌경우만, 십/백/천 표시
+          if(strTextWord !== "")
+          {
+                man_count++;
+                strTextWord += arrDigitWord[(num_length - (i+1)) % 4];
+          }
+          // 만단위마다 표시 (0인경우에도 만단위는 표시한다)
+          if(man_count !== 0 && (num_length - (i+1)) % 4 === 0)
+          {
+                man_count = 0;
+                strTextWord = strTextWord + arrManWord[(num_length - (i+1)) / 4];
+          }
+          han_value += strTextWord;
+    }
+    if(crncy === "1") {
+        $("#korPrice").val(usdTxt);
+    } else {
+        if(num_value !== "" && num_value > 0) {
+          han_value = "一金  " + han_value + "원 정";
+          $("#korPrice").val(han_value);
+        
+        } else {
+            $("#korPrice").val("");
+        }
+    }
+}
+
+
+// 반복행은 행 추가시 element에 지정한 아이디 뒤에 숫자가 붙습니다 (첫행 제외)
+// ex: stndAmnt_1, stndAmnt_2 ...
+$(document)
+.on("change", "input[id^=psnPrice]", function() { console.log("일"); setPrice(this);})
+.on("focus", "input[id^=psnPrice]", function() { console.log("이");setPrice(this);})
+.on("blur", "input[id^=psnPrice]", function() { console.log("삼");setPrice(this);});
+
+function setPrice(eventTrgt){
+    //지급액 총 합계 계산
+    var totPsnPrice = 0;
+
+    $("input[id^=psnPrice]").each(function(idx, obj){ 
+        // 금액 필드 전체를 합산하여 값을 세팅함
+        totPsnPrice += Number($(obj).val().replace(/[^0-9]/g, ""));
+        
+    });
+    $("#psnTotPrice").val(naon.string.formatComma(totPsnPrice));
+    $("#numPrice").val(naon.string.formatComma(totPsnPrice)+" (VAT 포함)");
+    fn_change_hangul_money();
+}
+
+$(document).on("click", "#delPsnBtn", function() { 
+    // 삭제버튼 클릭시 제일 마지막 행만 지워지므로 금액 합계만 다시 계산
+    var totPsnPrice = 0;
+    $("input[id^=psnPrice]").each(function(idx, obj){ 
+        totPsnPrice += Number($(obj).val().replace(/[^0-9]/g, ""));
+    });
+    $("#psnTotPrice").val(naon.string.formatComma(totPsnPrice));
+    $("#numPrice").val(naon.string.formatComma(totPsnPrice)+" (VAT 포함)");
+    fn_change_hangul_money();
+});
+
+$(document).on("change", "#select_nextpay", function() { 
+    // 추후지급계획 셀렉박스Event
+    $("#date_payment").val('');
+    var isPermanent = $("#select_nextpay").val() === "0" ? true : false;
+    $("#date_payment").prop("disabled", isPermanent);
+});
+
+$(document).on("change", "#select_WonUSD", function() { 
+    // 총매입금액 통화 변경
+    $("#select_WonUSD").val() === "0" ? fn_change_hangul_money() : $("#korPrice").val(usdTxt);
+});
+
+
+$(document).on("change", "tr[data-repeat-group-id^=1675149367125]", function(event) {
+    var tmp = event.target.id;
+
+    // 지급수단 카드결제 선택 시
+    if (tmp !== "MeansOfPayment") {
+        var tmp2 = tmp.split("_")[1];
+        var MeansOfPayment1 = $("#MeansOfPayment_" + tmp2).val();
+        var NameOfAccount1 = $("#NameOfAccount_" + tmp2);
+        var AccountNum1 = $("#AccountNum_" + tmp2);
+        var NameOfBank1 = $("#NameOfBank_" + tmp2);
+
+        // 초기화
+        NameOfAccount1.prop('readonly', false);
+        AccountNum1.prop('readonly', false);
+        NameOfBank1.prop('readonly', false);
+
+        if (MeansOfPayment1 === '2') {
+            // MeansOfPayment1 값이 2라면 '해당없음'으로 설정하고 읽기 전용으로 설정
+            NameOfAccount1.val('해당없음').prop('readonly', true);
+            AccountNum1.val('해당없음').prop('readonly', true);
+            NameOfBank1.val('해당없음').prop('readonly', true);
+        } else {
+            // MeansOfPayment1 값이 2가 아니라면 사용자가 입력 가능하도록 설정
+            if (NameOfAccount1.val() === '해당없음') {
+                NameOfAccount1.val(''); // 초기화
+            }
+            if (AccountNum1.val() === '해당없음') {
+                AccountNum1.val(''); // 초기화
+            }
+            if (NameOfBank1.val() === '해당없음') {
+                NameOfBank1.val(''); // 초기화
+            }
+        }
+    } else {
+        var MeansOfPayment = $("#MeansOfPayment").val();
+        var NameOfAccount = $("#NameOfAccount");
+        var AccountNum = $("#AccountNum");
+        var NameOfBank = $("#NameOfBank");
+
+        // 초기화
+        NameOfAccount.prop('readonly', false);
+        AccountNum.prop('readonly', false);
+        NameOfBank.prop('readonly', false);
+
+        if (MeansOfPayment === '2') {
+            // MeansOfPayment 값이 2라면 '해당없음'으로 설정하고 읽기 전용으로 설정
+            NameOfAccount.val('해당없음').prop('readonly', true);
+            AccountNum.val('해당없음').prop('readonly', true);
+            NameOfBank.val('해당없음').prop('readonly', true);
+        } else {
+            // MeansOfPayment 값이 2가 아니라면 사용자가 입력 가능하도록 설정
+            if (NameOfAccount.val() === '해당없음') {
+                NameOfAccount.val(''); // 초기화
+            }
+            if (AccountNum.val() === '해당없음') {
+                AccountNum.val(''); // 초기화
+            }
+            if (NameOfBank.val() === '해당없음') {
+                NameOfBank.val(''); // 초기화
+            }
+        }
+    }
+});

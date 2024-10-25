@@ -125,7 +125,7 @@ function setPrice(eventTrgt){
 
     let discount = parseFloat($("#Discount").val().replace(/,/g, '')) || 0; // Ensure Discount is defined and correctly formatted
     let lastPrice = totPsnPrice2 - discount;
-    let contractPrice = Math.floor(lastPrice / 1000) * 1000;
+    let contractPrice = lastPrice; //Math.floor(lastPrice / 1000) * 1000; > 최종계약금액 천단위 절사 비활성 처리
     let billprice = Math.round(contractPrice * (billrate / 100)); // 청구요율에 따른 당해청구금액 계산
 
     $("#P11").val(P11);

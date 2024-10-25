@@ -1,0 +1,202 @@
+$(document).ready(function() {
+    // 문서 진입 시 실행할 내용
+    $('#eapDocReg_docSubject').attr('disabled', true);
+    $('#bgnde').attr('disabled', true);
+    $('#endde').attr('disabled', true);
+    
+    if(loginUserInfo.mobileAppLoginYn == "Y" || naon.util.isMobileUrl() || naon.isMobile.any()){
+        $('#frm_DtBox').DateTimePicker({
+			language : loginUserInfo.langCd,
+			dateFormat: "yyyy-MM-dd",
+			dateSeparator: "-",
+			beforeShow: function(input, inset) {
+			    var dTP = this;
+			    var elId = $(input).attr('id');
+				var minDate = '';
+					
+				if(elId == 'bgnde'){
+					let date = new Date();
+					date.setDate(date.getDate()-2);
+					minDate = date;
+				}else if(elId == 'endde'){
+					let date = new Date();
+					date.setDate(date.getDate()-2);
+					minDate = date;
+				}else if(elId.includes('workday')){
+					let date = new Date();
+					date.setDate(date.getDate()-2);
+					minDate = date;
+				}
+				dTP.settings.minDate = minDate;	// datePicker 선택이 가능한 최소날짜 옵션
+			}
+		});
+    }else{
+        $("#workday").datepicker('option', 'minDate', -2);
+    }
+
+    $("#site").attr("placeholder", "예) 한국교육학술정보원(KERIS)");
+    $("#area").attr("placeholder", "예) 시(도) 구(군) 순");
+    $("#purpose").attr("placeholder", "현재 수행 중인 사업기간 내 사업이 존재하는 경우 '사업명'을 기재");
+
+
+    // 이벤트 핸들러 등록
+    
+    $('#type').on('change', function() {
+        handleTypeChange()
+        getInputValue();
+        dateCnt();
+    });
+    
+    $('#site').on('change', function() {
+        getInputValue();
+        dateCnt();
+    });
+
+    $('#bgnde').on('change', function() {
+        getInputValue();
+        dateCnt();
+    });
+
+    $('#endde').on('change', function() {
+        getInputValue();
+        dateCnt();
+    });
+    
+    $('#area').on('change', function() {
+        getInputValue();
+        dateCnt();
+    });    
+    
+    $('#purpose').on('change', function() {
+        getInputValue();
+        dateCnt();
+    });    
+    
+});
+
+function handleTypeChange() {
+    var typeValue = $("#type").val();
+
+    // 만약 typeValue가 0이라면 시작일, 종료일 입력 제한
+    if (typeValue === '0') {
+        $("#bgnde").attr("disabled", true);
+        $("#endde").attr("disabled", true);
+
+    } else {
+        // 만약 typeValue가 0이 아니라면, 입력 필드를 활성화
+        $("#bgnde").removeAttr("disabled");
+        $("#endde").removeAttr("disabled");
+    }
+}
+
+function getInputValue() {
+    var a = $("#type").val();
+    var b = $("#site").val();
+    var c = $("#bgnde").val();
+    var d = $("#endde").val();
+    var userInputarea = $("#area").val();
+    var userInput = userInputarea.replace(/[^\w\s,ㄱ-힣]/g, '');
+
+    // 결과를 표시
+    $('#eapDocReg_docSubject').val(b + " 외부근무신청의 건" + " (" + userInput + " / " + a + " / " + c + " ~ " + d + ")");
+    $('#eapDocReg_docSubject').focus();
+    $('#area').val(userInput);
+}
+
+// 업무수행계획 날짜 입력 제한
+$(document).on("change", "tr[data-repeat-group-id^=1705988821905]", function(event) {
+    
+    if(loginUserInfo.mobileAppLoginYn == "Y" || naon.util.isMobileUrl() || naon.isMobile.any()){
+        $('#frm_DtBox').DateTimePicker({
+			language : loginUserInfo.langCd,
+			dateFormat: "yyyy-MM-dd",
+			dateSeparator: "-",
+			beforeShow: function(input, inset) {
+			    var dTP = this;
+			    var elId = $(input).attr('id');
+				var minDate = '';
+					
+				if(elId == 'bgnde'){
+					let date = new Date();
+					date.setDate(date.getDate()-2);
+					minDate = date;
+				}else if(elId == 'endde'){
+					let date = new Date();
+					date.setDate(date.getDate()-2);
+					minDate = date;
+				}else if(elId.includes('workday')){
+					let date = new Date();
+					date.setDate(date.getDate()-2);
+					minDate = date;
+				}
+				
+				dTP.settings.minDate = minDate;	// datePicker 선택이 가능한 최소날짜 옵션
+			}
+		});
+    }else{
+        // 기본적으로 모든 경우에 해당하는 코드
+        $("#workday").datepicker('option', 'minDate', -2);  
+        
+        var tmp = event.target.id;
+    
+        // 업무수행계획 행추가된 날짜 입력제한
+        if (tmp !== "workday") {
+            var tmp2 = tmp.split("_")[1];
+            $('#workday_' + tmp2).datepicker('option', 'minDate', -2);
+        }
+    }
+});
+
+// 날짜계산
+function dateCnt() {
+    // 시작일은 과거 7일 전까지 / 종료일은 오늘 이전의 날짜 선택 불가능하게 설정
+    if(loginUserInfo.mobileAppLoginYn == "Y" || naon.util.isMobileUrl() || naon.isMobile.any()){
+        $('#frm_DtBox').DateTimePicker({
+			language : loginUserInfo.langCd,
+			dateFormat: "yyyy-MM-dd",
+			dateSeparator: "-",
+			beforeShow: function(input, inset) {
+			    var dTP = this;
+			    var elId = $(input).attr('id');
+				var minDate = '';
+					
+				if(elId == 'bgnde'){
+					let date = new Date();
+					date.setDate(date.getDate()-2);
+					minDate = date;
+				}else if(elId == 'endde'){
+					let date = new Date();
+					date.setDate(date.getDate()-2);
+					minDate = date;
+				}else if(elId.includes('workday')){
+					let date = new Date();
+					date.setDate(date.getDate()-2);
+					minDate = date;
+				}
+				dTP.settings.minDate = minDate;	// datePicker 선택이 가능한 최소날짜 옵션
+			}
+		});
+    }else{
+        $('#bgnde').datepicker('option', 'minDate', -2);
+        $('#endde').datepicker('option', 'minDate', 0);
+    }
+    
+    var date1 = $('#bgnde').datepicker('getDate');
+    var date2 = $('#endde').datepicker('getDate');
+    
+    if(loginUserInfo.mobileAppLoginYn == "Y" || naon.util.isMobileUrl() || naon.isMobile.any()){
+        var bgnde = $('#bgnde').val() == '' ? null : $('#bgnde').val();
+        var endde = $('#endde').val() == '' ? null : $('#endde').val();
+        date1 = new Date(bgnde);
+        date2 = new Date(endde); 
+    }
+
+    // 날짜 차이를 일 단위로 계산
+    const diffInDays = Math.ceil((date2 - date1) / (1000 * 60 * 60 * 24));
+
+    // "#type" 값이 '오전외근'이나 '오후외근'인 경우 0.5를 출력, 아니면 diffInDays + 1을 출력
+    const result = $('#type').val() === '오전외근' || $('#type').val() === '오후외근' ? 0.5 : diffInDays + 1;
+
+    // 결과를 출력
+    $('#date').val(result);
+}

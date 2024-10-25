@@ -1,0 +1,213 @@
+// 문서 진입할때 적용할 내용
+$(document).ready(function() {
+    $('#eapDocReg_docSubject').attr('disabled',true); /*제목입력잠금*/
+});
+$("#eapDocReg_docSubject").attr("placeholder", "아래 기입된 관련사업 및 품목에 따라 자동입력됩니다.");
+
+
+// 각 아이디 값마다 change 이벤트 적용
+$('#p3').change(function() {
+    getInputValue();
+});
+$('input[name=p4]').click(function(){
+    getInputValue();
+});
+
+$('#select_WonUSD').change(function() {
+    setPrice(this);
+});
+
+function getInputValue() {
+  $('#eapDocReg_docSubject').attr('disabled', true); // 제목입력잠금
+
+  const docSubject = $('#eapDocReg_docSubject').val();
+  const a = $('#p3').val();
+  let b = '';
+
+  $('input[name=p4]:checked').each(function (index, item) {
+    b += item.id;
+    if (index !== $('input[name=p4]:checked').length - 1) {
+      b += ', ';
+    }
+  });
+
+  $('#eapDocReg_docSubject').val(a + ' 관련 ' + b + ' 구매진행 품의');
+  $('#eapDocReg_docSubject').focus();
+}
+
+// 1 ~ 9 한글 표시
+var arrNumberWord = new Array("","일","이","삼","사","오","육","칠","팔","구");
+// 10, 100, 100 자리수 한글 표시
+var arrDigitWord = new  Array("","십","백","천");
+// 만단위 한글 표시
+var arrManWord = new  Array("","만","억", "조");
+
+var usdTxt = '해외 미화달러 결제 건(현재환율 기타사항 기재)';
+
+$("#date_expire").prop("disabled", true);
+
+$("#numPrice").attr("disabled", true);
+$("#korPrice").attr("disabled", true);
+$("#psnPrice").attr("disabled", true);
+$("#psnTotPrice").attr("disabled", true);
+$("#DispsnTotPrice").attr("disabled", true);
+$("#vat").attr("disabled", true);
+$("#vatSum").attr("disabled", true);
+
+$("#Discount").prop("placeholder", "직접입력, 없으면 N 선택");
+
+$("#p1").attr("placeholder", "예) 세금계산서 발행 후 30일 내 현금지급(계약시 선금30% / 납품시 잔금70%)");
+$("#p2").attr("placeholder", "예) 서울특별시 종로구 새문안로5길 13 변호사회관 11F, 12F(서울정부청사 고객사 인근)");
+$("#p3").attr("placeholder", "예) 여성가족부 위기청소년 통합지원정보시스템 구축(내부구매 건은 '메타빌드 본사/연구소' 기입)");
+$("#price").attr("placeholder", "VAT포함가 / 1.1");
+$("#psnPrice").attr("placeholder", "←소수2자리까지");
+
+// 반복행은 행 추가시 element에 지정한 아이디 뒤에 숫자가 붙습니다 (첫행 제외)
+// ex: stndAmnt_1, stndAmnt_2 ...
+$(document)
+.on("change", "input[id^=psnPrice], input[id^=Discount]", function() { setPrice(this);})
+.on("focus", "input[id^=psnPrice], input[id^=Discount]", function() { setPrice(this);})
+.on("blur", "input[id^=psnPrice], input[id^=Discount]", function() { setPrice(this);});
+
+
+function setPrice(eventTrgt){
+    //매입금 총 합계 계산
+    var totPsnPrice = 0;
+    var vatSum = 0;
+
+
+    $("input[id^=psnPrice]").each(function(idx, obj){ 
+        // 금액 필드 전체를 합산하여 값을 세팅함
+        totPsnPrice += Number($(obj).val().replace(/[^0-9.]/g, ""));
+    });
+    
+    $("#psnTotPrice").val(naon.string.formatComma(totPsnPrice));
+    
+    var Discount = $("#Discount").val().replace(/[^0-9]/g, ""); //추가할인 사용자 입력값
+    DispsnTotPrice = totPsnPrice-Discount; // 최종물품가액 = 물품제안가액 - 추가할인금액
+    
+    $("#DispsnTotPrice").val(naon.string.formatComma(DispsnTotPrice)); 
+    
+    var vat = Math.round(DispsnTotPrice*0.1);
+    
+    // $ 선택할 경우 vat 값을 0으로 변경
+    if($('#select_WonUSD').val() == 1){ // $일 경우
+       vat = 0;
+       $("#DispsnTotPrice").val(naon.string.formatComma("총매입금 참고(관/부가세 포함)"));
+       $("#vat").val(naon.string.formatComma("별도기입된 해외관부가세 참고"));
+       $("#numPrice").val(naon.string.formatComma(Math.round(DispsnTotPrice+vat))+" (관/부가세포함)");
+    }else{
+        $("#vat").val(naon.string.formatComma(vat));
+        $("#numPrice").val(naon.string.formatComma(Math.round(DispsnTotPrice+vat))+" (VAT 포함)");
+    }
+    
+    $("#vatSum").val(naon.string.formatComma(Math.round(DispsnTotPrice+vat)));
+
+    fn_change_hangul_money();
+}
+
+$(document).on("click", "#delPsnBtn", function() { 
+    // 삭제버튼 클릭시 제일 마지막 행만 지워지므로 금액 합계만 다시 계산
+    setPrice(this);
+    // var totPsnPrice = 0;
+    // $("input[id^=psnPrice]").each(function(idx, obj){ 
+    //     totPsnPrice += Number($(obj).val().replace(/[^0-9.]/g, ""));
+    // });
+    // $("#psnTotPrice").val(naon.string.formatComma(totPsnPrice));
+    // $("#vat").val(naon.string.formatComma( Math.round(totPsnPrice*0.1)));
+    // $("#vatSum").val(naon.string.formatComma(Math.round(totPsnPrice+Math.round(totPsnPrice*0.1))));
+    // $("#numPrice").val(naon.string.formatComma(Math.round(totPsnPrice+Math.round(totPsnPrice*0.1)))+" (VAT 포함)");
+    // fn_change_hangul_money();
+});
+
+$(document).on("change", "tr[data-repeat-group-id^=1673418894026]", function() {
+    var tmp = event.target.id;
+     //  지출내역 수량, 단가 입력 시
+     if (tmp !== "price" && tmp !== "count"){
+        var tmp2 = tmp.split("_")[1];
+        var price1 = $("#price_" + tmp2 ).val();
+        var count1 = $("#count_" + tmp2 ).val();
+        var sum1 = price1.replace(/,/g, '') * count1.replace(/,/g, '');
+        //var sum2 = price1.replace(/,/g, '') * count1.replace(/,/g, '')+Math.round((price1.replace(/,/g, '') * count1.replace(/,/g, '')*0.1));
+        $("#psnPrice_" + tmp2).val(naon.string.formatComma(sum1));
+        //$("#VATpsnPrice_" + tmp2).val(naon.string.formatComma(sum2));
+        
+    }else{
+        var price = $("#price").val();
+        var count = $("#count").val();
+        var sum = price.replace(/,/g, '') * count.replace(/,/g, '');
+        //var sum0 = price.replace(/,/g, '') * count.replace(/,/g, '')+Math.round((price.replace(/,/g, '') * count.replace(/,/g, '')*0.1));
+        $("#psnPrice").val(naon.string.formatComma(sum));
+        //$("#VATpsnPrice").val(naon.string.formatComma(sum0));
+        
+    }
+    setPrice(this);
+    fn_change_hangul_money();
+});
+
+$(document).on("change", "#DiscountYN", function() { 
+    // 추가할인여부Event
+    $("#Discount").val('');
+    var isDiscount = $("#DiscountYN").val() === "1" ? true : false;
+    $("#Discount").prop("disabled", isDiscount);
+    $("#Discount").val(naon.string.formatComma("없음", isDiscount));
+    setPrice(this);
+    });
+
+$(document).on("change", "#select_permanent", function() { 
+    // 사용만료일 셀렉박스Event
+    $("#date_expire").val('');
+    var isPermanent = $("#select_permanent").val() === "0" ? true : false;
+    $("#date_expire").prop("disabled", isPermanent);
+});
+
+$(document).on("change", "#select_WonUSD", function() { 
+    // 총매입금액 통화 변경
+    $("#select_WonUSD").val() === "0" ? fn_change_hangul_money() : $("#korPrice").val(usdTxt);
+});
+
+
+function fn_change_hangul_money()
+{
+    var crncy = $("#select_WonUSD").val();
+    var num_value = $("#vatSum").val().replace(/,/g, '');
+   // var num_value = txt_id.value.replace(/,/g, '');
+    var num_length = num_value.length;
+
+    if(isNaN(num_value) === true){
+          return;}
+    
+    var han_value = "";
+    var man_count = 0;      // 만단위 0이 아닌 금액 카운트.
+
+    for(i=0; i < num_value.length; i++)
+    {
+          // 1단위의 문자로 표시.. (0은 제외)
+          var strTextWord = arrNumberWord[num_value.charAt(i)];
+          // 0이 아닌경우만, 십/백/천 표시
+          if(strTextWord !== "")
+          {
+                man_count++;
+                strTextWord += arrDigitWord[(num_length - (i+1)) % 4];
+          }
+          // 만단위마다 표시 (0인경우에도 만단위는 표시한다)
+          if(man_count !== 0 && (num_length - (i+1)) % 4 === 0)
+          {
+                man_count = 0;
+                strTextWord = strTextWord + arrManWord[(num_length - (i+1)) / 4];
+          }
+          han_value += strTextWord;
+    }
+    if(crncy === "1") {
+        $("#korPrice").val(usdTxt);
+    } else {
+        if(num_value !== "" && num_value > 0) {
+          han_value = "一金  " + han_value + "원 정";
+          $("#korPrice").val(han_value);
+        
+        } else {
+            $("#korPrice").val("");
+        }
+    }
+    //document.all.korPrice.value = han_value;
+}

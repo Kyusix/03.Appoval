@@ -159,7 +159,7 @@ function setPrice(eventTrgt){
     var totPsnPrice2 = 0;
     var contractPrice = 0;
     var ToTcontractPrice = 0;
-    var MaintainRate1 = $("#MaintainRate1").val(); //금년 제품 유지보수 요율
+    var MaintainRate1 = $("#MaintainRate1").val(); //금년 제품 유지보수 요율 사용자 입력값
     
     // 입력값을 숫자로 변환하고 소수점 2자리까지 표시
     MaintainRate1 = Number(MaintainRate1).toFixed(2);
@@ -195,23 +195,34 @@ function setPrice(eventTrgt){
     var LastContractPrice = $("#LastContractPrice").val().replace(/[^0-9]/g, ""); //직전년도 계약금액 입력
     var iscontractPrice = $("#contractPrice").val(); //금년도 계약금액 호출
     var ContractPriceGap = iscontractPrice.replace(/,/g, '') - LastContractPrice.replace(/,/g, ''); // 전년도 유지보수 금액 차이 계산
-    var MaintainRate1View = (contractPrice / totPsnPrice1 * 100).toFixed(2); // 금년도 제품 유지보수 요율 자동계산
-    var LastRate1 = (LastContractPrice / totPsnPrice1 * 100).toFixed(2); // 직전년도 제품 유지보수 요율 자동계산
-    var RateGap1 = MaintainRate1View.replace(/,/g, '') - LastRate1.replace(/,/g, ''); // 전년도 제품 유지보수 요율 차이 계산
+    
+    var MaintainRate1View, LastRate1, RateGap1;
+
+    if (MaintainRate1 == 0) { // 금년 유지보수 요율이 0이면 아래 값들도 모두 0 처리 
+    MaintainRate1View = 0;
+    LastRate1 = 0;
+    RateGap1 = 0;
+    } else {
+    MaintainRate1View = (contractPrice / totPsnPrice1 * 100).toFixed(2); // 금년도 제품 유지보수 요율 자동계산
+    LastRate1 = (LastContractPrice / totPsnPrice1 * 100).toFixed(2); // 직전년도 제품 유지보수 요율 자동계산
+    RateGap1 = MaintainRate1View.replace(/,/g, '') - LastRate1.replace(/,/g, ''); // 전년도 제품 유지보수 요율 차이 계산
+    }
     
     // 소수점 이하 2자리까지 표시
     RateGap1 = parseFloat(RateGap1).toFixed(2);
     
-    // RateGap1에 따라 highlow 항목 설정
-    var highlow = "";
-    if (RateGap1 < 0) {
+    // RateGap1 및 MaintainRate1View에 따라 highlow 항목 설정
+   var highlow = "";
+   if (MaintainRate1View === 0) {
+    highlow = "대상아님";
+   } else if (RateGap1 < 0) {
     highlow = "감소";
-    } else if (RateGap1 > 0) {
+   } else if (RateGap1 > 0) {
     highlow = "상승";
-    } else {
+   } else {
     highlow = "전년동일";
-    }
-
+   }
+   
     $("#ProductpsnTotPrice").val(naon.string.formatComma(totPsnPrice1));
     $("#LaborpsnTotPrice").val(naon.string.formatComma(totPsnPrice2));
     $("#Y").val(Y.toFixed(2).replace('.00', ''));

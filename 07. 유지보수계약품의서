@@ -143,7 +143,7 @@ $("#highlow").attr("placeholder", "자동입력");
 
 $("#RateProductpsnTotPrice1").attr("placeholder", "좌측 요율값 입력(소수 2자리까지)");
 $("#SpecialDiscount1").attr("placeholder", "직접입력(만단위까지), 없으면 N 선택");
-$("#SpecialDiscount2").attr("placeholder", "직접입력(만단위까지), 없으면 N 선택");
+$("#SpecialDiscount2").attr("placeholder", "직접입력, 없으면 N 선택");
 
 // 나열된 input 값들이 change, focus, blur(포커스 아웃) 될때마다 setPrice 실행(값 다시 셋팅)
 
@@ -176,8 +176,8 @@ function setPrice(eventTrgt){
     
     var RateProductpsnTotPrice1 = Math.round(totPsnPrice1*(MaintainRate1/100)); // 금년 유지보수 요율에 따른 제품 유지보수액 계산
     
-    var SpecialDiscount1 = $("#SpecialDiscount1").val().replace(/[^0-9]/g, "").substring(0, 5); //제품 유지보수 특별할인 사용자 입력값(다섯자리)
-    var SpecialDiscount2 = $("#SpecialDiscount2").val().replace(/[^0-9]/g, "").substring(0, 5); //개발 유지보수 특별할인 사용자 입력값(다섯자리)
+    var SpecialDiscount1 = $("#SpecialDiscount1").val().replace(/[^0-9]/g, "").substring(0, 5); //제품 유지보수 절사 사용자 입력값(만단위 제한)
+    var SpecialDiscount2 = $("#SpecialDiscount2").val().replace(/[^0-9]/g, ""); //개발 유지보수 특별할인 사용자 입력값
     
     var M = $("#M").val().replace(/[^0-9.]/g, "");
     var fixM = 12-M
@@ -254,7 +254,7 @@ function setPrice(eventTrgt){
     
     if ($("#DCYN1").val() == "1"){ 
     // 제품절사여부Event
-    $("#SpecialDiscount1").val("절사없음");
+    $("#SpecialDiscount1").val("없음");
     $("#SpecialDiscount1").prop("disabled", true);
     } else {
     $("#SpecialDiscount1").val(naon.string.formatComma(SpecialDiscount1));
@@ -263,7 +263,7 @@ function setPrice(eventTrgt){
 
     if ($("#DCYN2").val() == "1"){ 
     // 개발절사여부Event
-    $("#SpecialDiscount2").val("절사없음");
+    $("#SpecialDiscount2").val("없음");
     $("#SpecialDiscount2").prop("disabled", true);
     } else {
     $("#SpecialDiscount2").val(naon.string.formatComma(SpecialDiscount2));

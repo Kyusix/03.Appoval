@@ -10,8 +10,8 @@
    <img src="https://github.com/user-attachments/assets/eac9e9f9-0bd4-4ccd-b81b-93c1d2577b87" width="550" height="600"/>
 
 
-- 스크립트 작성 적용예시 (ex. 지출결의서)
-- 각 결재서식 별 적용된 소스코드 전문은 'Approval/결재서식명' 소스공유
+- 스크립트 작성 적용예시 (예시업무 : 지출결의서)  
+  : 각 결재서식 별 적용된 소스코드 전문은 'Approval/결재서식명' 소스공유
  
    ![스크립트 적용화면](https://github.com/user-attachments/assets/c741daff-6182-4b67-b83f-52f8baba2386)
 

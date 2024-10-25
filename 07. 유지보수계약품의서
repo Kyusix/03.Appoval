@@ -145,6 +145,8 @@ $("#RateProductpsnTotPrice1").attr("placeholder", "좌측 요율값 입력(소�
 $("#SpecialDiscount1").attr("placeholder", "직접입력(만단위까지), 없으면 N 선택");
 $("#SpecialDiscount2").attr("placeholder", "직접입력, 없으면 N 선택");
 
+$("#LicenseNum").attr("placeholder", "제품 다수일 경우 아래 '납품상세'에 입력");
+
 // 나열된 input 값들이 change, focus, blur(포커스 아웃) 될때마다 setPrice 실행(값 다시 셋팅)
 
 $(document)
@@ -176,7 +178,7 @@ function setPrice(eventTrgt){
     
     var RateProductpsnTotPrice1 = Math.round(totPsnPrice1*(MaintainRate1/100)); // 금년 유지보수 요율에 따른 제품 유지보수액 계산
     
-    var SpecialDiscount1 = $("#SpecialDiscount1").val().replace(/[^0-9]/g, "").substring(0, 5); //제품 유지보수 절사 사용자 입력값(만단위 제한)
+    var SpecialDiscount1 = $("#SpecialDiscount1").val().replace(/[^0-9]/g, "").substring(0, 6); //제품 유지보수 절사 사용자 입력값(만단위 제한)
     var SpecialDiscount2 = $("#SpecialDiscount2").val().replace(/[^0-9]/g, ""); //개발 유지보수 특별할인 사용자 입력값
     
     var M = $("#M").val().replace(/[^0-9.]/g, "");
@@ -227,7 +229,7 @@ function setPrice(eventTrgt){
     $("#LaborpsnTotPrice").val(naon.string.formatComma(totPsnPrice2));
     $("#Y").val(Y.toFixed(2).replace('.00', ''));
     $("#fixY").val(fixY.toFixed(2).replace('.00', ''));
-    $("#fixM").val(naon.string.formatComma(fixM));
+    $("#fixM").val(fixM.toFixed(1).replace('.0', ''));
     $("#sumProduct").val(naon.string.formatComma(disProductpsnTotPrice1));
     $("#sumLaboretc").val(naon.string.formatComma(disProductpsnTotPrice3));
     
@@ -285,7 +287,7 @@ function setPrice(eventTrgt){
 }
 
 
-$(document).on("change", "tr[data-repeat-group-id^=1674176942716]", function() {
+$(document).on("change", "tr[data-repeat-group-id^=1713138153867]", function() {
     var tmp = event.target.id;
      //  제품계약내역 수량, 단가 입력 시
      if (tmp !== "ProductPrice" && tmp !== "ProductCount"){

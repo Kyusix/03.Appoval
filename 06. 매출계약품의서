@@ -29,6 +29,10 @@ $('#endde').change(function() {
     dateCnt();
 });
 
+$('#DCYN').change(function() {
+    setPrice(this);
+});
+
 function getInputValue() {
     
        $('#eapDocReg_docSubject').attr('disabled',true); /*제목입력잠금*/
@@ -107,50 +111,61 @@ $(document)
 $(document).on("click", "#delPsnBtn", function() {setPrice(this);});
 
 function setPrice(eventTrgt){
-    //견적 총 합계 계산
-    var totPsnPrice2 = 0;
-
-    var billrate = $("#billrate").val(); //청구율
+    // 견적 총 합계 계산
+    let totPsnPrice2 = 0;
+    let billrate = parseFloat($("#billrate").val()) || 0; // 청구율
 
     $("input[id^=LaborpsnPrice]").each(function(idx, obj){ 
         // 금액 필드 전체를 합산하여 값을 세팅함
         totPsnPrice2 += Number($(obj).val().replace(/[^0-9]/g, ""));
-        
     });
     
-    var P11 = $("#p1").val();
-    var P22 = $("#p2").val();
+    let P11 = $("#p1").val();
+    let P22 = $("#p2").val();
     
-    contractPrice = Math.floor(totPsnPrice2 / 1000) * 1000;
-
-    var billprice = Math.round(contractPrice*(billrate/100)); // 청구요율에 따른 당해청구금액 계산
-    
+    let discount = parseFloat($("#Discount").val().replace(/,/g, '')) || 0; // Ensure Discount is defined and correctly formatted
+    let lastPrice = totPsnPrice2 - discount;
+    let contractPrice = Math.floor(lastPrice / 1000) * 1000;
+    let billprice = Math.round(contractPrice * (billrate / 100)); // 청구요율에 따른 당해청구금액 계산
 
     $("#P11").val(P11);
     $("#P22").val(P22);
     
     $("#LaborpsnTotPrice").val(naon.string.formatComma(totPsnPrice2));
     $("#sumLaboretc").val(naon.string.formatComma(totPsnPrice2));
-    $("#contractPrice").val(naon.string.formatComma(contractPrice));
 
-    $("#numPrice").val(naon.string.formatComma(contractPrice + " (VAT 별도)"));
+    $("#LastPrice").val(naon.string.formatComma(lastPrice));
+    $("#contractPrice").val(naon.string.formatComma(lastPrice));
+
+    $("#numPrice").val(naon.string.formatComma(lastPrice) + " (VAT 별도)");
 
     $("#bill").val(naon.string.formatComma(billprice));
     
-
-    fn_change_hangul_money(contractPrice);
+    if ($("#DCYN").val() == "1"){ 
+    // 할인여부Event
+    $("#Discount").val("없음");
+    $("#Discount").prop("disabled", true);
+    } else {
+    $("#Discount").val(naon.string.formatComma(discount));
+    $("#Discount").prop("disabled", false);
+    }
+    
+    
+    fn_change_hangul_money(lastPrice); // Ensure lastPrice is used correctly
 }
 
-$(document).on("change", "tr[data-repeat-group-id^=1674113007572]", function() {
+$(document).on("change", "#Discount", function(event) {
+    setPrice(event.target); // Discount 값 변경 시 setPrice 함수 호출
+});
 
-    var numPrice = Number($("#numPrice").val().replace(/[^0-9]/g, ""));
-
-    var tmp = event.target.id;
+$(document).on("change", "tr[data-repeat-group-id^=1674113007572]", function(event) {
+    let numPrice = Number($("#numPrice").val().replace(/[^0-9]/g, ""));
+    let tmp = event.target.id;
     
     // 대금청구정보 입력 시
     if (tmp !== "billrate" ){
-        var tmp2 = tmp.split("_")[1];
-        var billrate1 = $("#billrate_" + tmp2 ).val();
+        let tmp2 = tmp.split("_")[1];
+        let billrate1 = parseFloat($("#billrate_" + tmp2).val()) || 0;
         
         // 최대값을 100으로 제한
         if (billrate1 > 100) {
@@ -158,11 +173,10 @@ $(document).on("change", "tr[data-repeat-group-id^=1674113007572]", function() {
             $("#billrate_" + tmp2).val(billrate1.toFixed(2));
         }
 
-        var sum1 = Math.round(numPrice * (billrate1 / 100));
+        let sum1 = Math.round(numPrice * (billrate1 / 100));
         $("#bill_" + tmp2).val(naon.string.formatComma(sum1));
     } else {
-        var bill = $("#bill").val(); // 당해청구액
-        var billrate = parseFloat($("#billrate").val());
+        let billrate = parseFloat($("#billrate").val()) || 0;
 
         // 최대값을 100으로 제한
         if (billrate > 100) {
@@ -170,41 +184,41 @@ $(document).on("change", "tr[data-repeat-group-id^=1674113007572]", function() {
             $("#billrate").val(billrate.toFixed(2));
         }
 
-        var sum = Math.round(numPrice * (billrate / 100)); // 청구요율에 따른 당해청구금액 계산
-
+        let sum = Math.round(numPrice * (billrate / 100)); // 청구요율에 따른 당해청구금액 계산
         $("#bill").val(naon.string.formatComma(sum));
     }
     
-    setPrice(this);
-
+    setPrice(event.target);
 });
 
-
-$(document).on("change", "tr[data-repeat-group-id^=1713922601201]", function() {
-    var tmp = event.target.id;
+$(document).on("change", "tr[data-repeat-group-id^=1713922601201]", function(event) {
+    let tmp = event.target.id;
     // 세부내역 수량, 단가 입력 시
     if (tmp !== "LaborPrice" && tmp !== "LaborCount") {
-        var tmp2 = tmp.split("_")[1];
-        var LaborPrice1 = $("#LaborPrice_" + tmp2).val();
-        var LaborCount1 = $("#LaborCount_" + tmp2).val();
-        var sum1 = LaborPrice1.replace(/,/g, '') * LaborCount1.replace(/,/g, '');
+        let tmp2 = tmp.split("_")[1];
+        let LaborPrice1 = $("#LaborPrice_" + tmp2).val().replace(/,/g, '');
+        let LaborCount1 = $("#LaborCount_" + tmp2).val().replace(/,/g, '');
+        let sum1 = Number(LaborPrice1) * Number(LaborCount1);
         
         // 반올림하여 정수로 변환
-        var roundedSum1 = Math.round(sum1);
-
+        let roundedSum1 = Math.round(sum1);
         $("#LaborpsnPrice_" + tmp2).val(naon.string.formatComma(roundedSum1));
     } else {
-        var LaborPrice = $("#LaborPrice").val();
-        var LaborCount = $("#LaborCount").val();
-        var sum = LaborPrice.replace(/,/g, '') * LaborCount.replace(/,/g, '');
+        let LaborPrice = $("#LaborPrice").val().replace(/,/g, '');
+        let LaborCount = $("#LaborCount").val().replace(/,/g, '');
+        let sum = Number(LaborPrice) * Number(LaborCount);
 
         // 반올림하여 정수로 변환
-        var roundedSum = Math.round(sum);
-
+        let roundedSum = Math.round(sum);
         $("#LaborpsnPrice").val(naon.string.formatComma(roundedSum));
     }
-    setPrice(this);
+
+    setPrice(event.target);
+    
     fn_change_hangul_money();
+    
+    
+    
 });
 
 

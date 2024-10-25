@@ -94,6 +94,7 @@ $("#M").attr("placeholder", "자동");
 $("#sumProduct").attr("placeholder", "하단 입력값에 따라 자동입력");
 $("#sumLaboretc").attr("placeholder", "하단 입력값에 따라 자동입력");
 $("#contractPrice").attr("placeholder", "하단 입력값에 따라 자동입력");
+$("#LaborCount").attr("placeholder", "소수가능");
 
 $("#BasisOfLabor").attr("placeholder", "인건비 내역 간략히 기입 / 예) 고급6MM, 중급8MM, 초급10MM 기준");
 $("#BasisOfCharges").attr("placeholder", "예비비 및 기타비용 등 주요항목 간략히 기재");
@@ -237,23 +238,29 @@ $(document).on("change", "tr[data-repeat-group-id^=1674176942716]", function() {
 
 $(document).on("change", "tr[data-repeat-group-id^=1674176957581]", function() {
     var tmp = event.target.id;
-     //  인건비/기타 계약내역 수량, 단가 입력 시
-     if (tmp !== "LaborPrice" && tmp !== "LaborCount"){
+    // 인건비/기타 계약내역 수량, 단가 입력 시
+    if (tmp !== "LaborPrice" && tmp !== "LaborCount") {
         var tmp2 = tmp.split("_")[1];
-        var LaborPrice1 = $("#LaborPrice_" + tmp2 ).val();
-        var LaborCount1 = $("#LaborCount_" + tmp2 ).val();
+        var LaborPrice1 = $("#LaborPrice_" + tmp2).val();
+        var LaborCount1 = $("#LaborCount_" + tmp2).val();
         var sum1 = LaborPrice1.replace(/,/g, '') * LaborCount1.replace(/,/g, '');
-        $("#LaborpsnPrice_" + tmp2).val(naon.string.formatComma(sum1));
-    }else{
+        
+        // 반올림하여 정수로 변환
+        var roundedSum1 = Math.round(sum1);
+
+        $("#LaborpsnPrice_" + tmp2).val(naon.string.formatComma(roundedSum1));
+    } else {
         var LaborPrice = $("#LaborPrice").val();
         var LaborCount = $("#LaborCount").val();
         var sum = LaborPrice.replace(/,/g, '') * LaborCount.replace(/,/g, '');
 
-        $("#LaborpsnPrice").val(naon.string.formatComma(sum));
+        // 반올림하여 정수로 변환
+        var roundedSum = Math.round(sum);
+
+        $("#LaborpsnPrice").val(naon.string.formatComma(roundedSum));
     }
     setPrice(this);
     fn_change_hangul_money();
-
 });
 
 

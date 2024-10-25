@@ -5,7 +5,7 @@
    ![01  폼디자이너 UX UI 툴](https://github.com/user-attachments/assets/d431d40f-9b56-45d6-b8c5-61a548e9d767)
 
 
-- 구성한 필드에 고유값 (NAME 또는 ID) 를 부여한 뒤 jQuery java 라이브러리 기반 스크립트 작성하여 의도한 동작적용
+- 구성된 필드에 고유값(NAME or ID)부여한 뒤 jQuery java 라이브러리 기반 스크립트를 통해 의도한 동작적용
 
    <img src="https://github.com/user-attachments/assets/eac9e9f9-0bd4-4ccd-b81b-93c1d2577b87" width="550" height="600"/>
 

@@ -4,6 +4,7 @@ $(document).ready(function() {
 });
 $("#eapDocReg_docSubject").attr("placeholder", "아래 기입된 관련사업 및 품목에 따라 자동입력됩니다.");
 
+$("#AccountNum").attr("placeholder", "'숫자','-'기호만 가능, 개별계좌는 '-'만 입력");
 
 // 각 아이디 값마다 change 이벤트 적용
 
@@ -19,6 +20,10 @@ $('#p4').click(function(){
     getInputValue();
 });
 
+$('#PayDate').change(function(){
+    getInputValue();
+});
+
 function getInputValue() {
     
        $('#eapDocReg_docSubject').attr('disabled',true); /*제목입력잠금*/
@@ -26,8 +31,9 @@ function getInputValue() {
 		var docSubject = $('#eapDocReg_docSubject').val();
 		var a = $('#p3').val();
 		var b = $('#p4').val();
+		var c = $('#PayDate').val();
 
-        $('#eapDocReg_docSubject').val(a + " 관련 " + b + "지급신청" );
+        $('#eapDocReg_docSubject').val(a + " 관련 " + b + "지급신청 (결제일 : " + c + ")" );
         $('#eapDocReg_docSubject').focus();
 }
 
@@ -138,43 +144,21 @@ $(document).on("change", "#select_WonUSD", function() {
     $("#select_WonUSD").val() === "0" ? fn_change_hangul_money() : $("#korPrice").val(usdTxt);
 });
 
-
 $(document).on("change", "tr[data-repeat-group-id^=1675149367125]", function(event) {
     var tmp = event.target.id;
-
-    // 지급수단 카드결제 선택 시
-    if (tmp !== "MeansOfPayment") {
+    
+    // 계좌번호 입력 란
+    if (tmp !== "AccountNum") {
         var tmp2 = tmp.split("_")[1];
-        var MeansOfPayment1 = $("#MeansOfPayment_" + tmp2).val();
-        var NameOfBank1 = $("#NameOfBank_" + tmp2);
-
-        // 초기화
-        NameOfBank1.prop('readonly', false);
-
-        if (MeansOfPayment1 === '2') {
-            // MeansOfPayment1 값이 2라면 '해당없음'으로 설정하고 읽기 전용으로 설정
-            NameOfBank1.val('해당없음').prop('readonly', true);
-        } else {
-            // MeansOfPayment1 값이 2가 아니라면 사용자가 입력 가능하도록 설정
-            if (NameOfBank1.val() === '해당없음') {
-                NameOfBank1.val(''); // 초기화
-            }
-        }
+        var AccountNum1 = $("#AccountNum_" + tmp2 ).val();
+        // 숫자와 '-'만 남기고 다른 문자는 제거
+        AccountNum1 = AccountNum1.replace(/[^0-9-]/g, '');
+        $("#AccountNum_" + tmp2).val(AccountNum1);
+        
     } else {
-        var MeansOfPayment = $("#MeansOfPayment").val();
-        var NameOfBank = $("#NameOfBank");
-
-        // 초기화
-        NameOfBank.prop('readonly', false);
-
-        if (MeansOfPayment === '2') {
-            // MeansOfPayment 값이 2라면 '해당없음'으로 설정하고 읽기 전용으로 설정
-            NameOfBank.val('해당없음').prop('readonly', true);
-        } else {
-            // MeansOfPayment 값이 2가 아니라면 사용자가 입력 가능하도록 설정
-            if (NameOfBank.val() === '해당없음') {
-                NameOfBank.val(''); // 초기화
-            }
-        }
+        var AccountNum = $("#AccountNum").val();
+        // 숫자와 '-'만 남기고 다른 문자는 제거
+        AccountNum = AccountNum.replace(/[^0-9-]/g, '');
+        $("#AccountNum").val(AccountNum);
     }
 });

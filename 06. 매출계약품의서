@@ -180,16 +180,31 @@ $(document).on("change", "tr[data-repeat-group-id^=1674113007572]", function() {
     var numPrice = Number($("#numPrice").val().replace(/[^0-9]/g, ""));
 
     var tmp = event.target.id;
-     //  대금청구정보 입력 시
-     if (tmp !== "billrate" ){
+    
+    // 대금청구정보 입력 시
+    if (tmp !== "billrate" ){
         var tmp2 = tmp.split("_")[1];
         var billrate1 = $("#billrate_" + tmp2 ).val();
-        var sum1 = Math.round(numPrice*(billrate1/100));
+        
+        // 최대값을 100으로 제한
+        if (billrate1 > 100) {
+            billrate1 = 100;
+            $("#billrate_" + tmp2).val(billrate1.toFixed(2));
+        }
+
+        var sum1 = Math.round(numPrice * (billrate1 / 100));
         $("#bill_" + tmp2).val(naon.string.formatComma(sum1));
-    }else{
-        var bill = $("#bill").val(); //당해청구액
-        var billrate = $("#billrate").val(); //청구요율입력
-        var sum = Math.round(numPrice*(billrate/100)); // 청구요율에 따른 당해청구금액 계산
+    } else {
+        var bill = $("#bill").val(); // 당해청구액
+        var billrate = parseFloat($("#billrate").val());
+
+        // 최대값을 100으로 제한
+        if (billrate > 100) {
+            billrate = 100;
+            $("#billrate").val(billrate.toFixed(2));
+        }
+
+        var sum = Math.round(numPrice * (billrate / 100)); // 청구요율에 따른 당해청구금액 계산
 
         $("#bill").val(naon.string.formatComma(sum));
     }

@@ -1,0 +1,153 @@
+// 1 ~ 9 한글 표시
+var arrNumberWord = new Array("","일","이","삼","사","오","육","칠","팔","구");
+// 10, 100, 100 자리수 한글 표시
+var arrDigitWord = new  Array("","십","백","천");
+// 만단위 한글 표시
+var arrManWord = new  Array("","만","억", "조");
+
+$("#numPrice").attr("disabled", true);
+$("#korPrice").attr("disabled", true);
+$("#psnTotPrice").attr("disabled", true);
+$("#vat").attr("disabled", true);
+$("#vatSum").attr("disabled", true);
+
+$("#p1").attr("placeholder", "예시) 계약 후 1개월 이내");
+$("#p2").attr("placeholder", "예시) 메타빌드 본사 내 발주자 지정위치");
+$("#p3").attr("placeholder", "예시) 세금계산서 발행 후 30일 이내 현금지급 (선금30%, 잔금70%)");
+$("#SmartWork_URL").attr("placeholder", "좌측 버튼 클릭하여 해당 영업관리카드 선택 후 복사한 URL을 입력하세요");
+
+function fn_change_hangul_money()
+{
+    var num_value = $("#vatSum").val().replace(/,/g, '');
+   // var num_value = txt_id.value.replace(/,/g, '');
+    var num_length = num_value.length;
+
+    if(isNaN(num_value) === true){
+          return;}
+    
+    var han_value = "";
+    var man_count = 0;      // 만단위 0이 아닌 금액 카운트.
+
+    for(i=0; i < num_value.length; i++)
+    {
+          // 1단위의 문자로 표시.. (0은 제외)
+          var strTextWord = arrNumberWord[num_value.charAt(i)];
+          // 0이 아닌경우만, 십/백/천 표시
+          if(strTextWord !== "")
+          {
+                man_count++;
+                strTextWord += arrDigitWord[(num_length - (i+1)) % 4];
+          }
+          // 만단위마다 표시 (0인경우에도 만단위는 표시한다)
+          if(man_count !== 0 && (num_length - (i+1)) % 4 === 0)
+          {
+                man_count = 0;
+                strTextWord = strTextWord + arrManWord[(num_length - (i+1)) / 4];
+          }
+          han_value += strTextWord;
+    }
+    if(num_value !== 0){
+          han_value = "一金  " + han_value + "원 정";
+          $("#korPrice").val(han_value);
+        
+    }
+    //document.all.korPrice.value = han_value;
+}
+
+// 반복행은 행 추가시 element에 지정한 아이디 뒤에 숫자가 붙습니다 (첫행 제외)
+// ex: stndAmnt_1, stndAmnt_2 ...
+$(document)
+.on("change", "input[id^=psnPrice], input[id^=price], input[id^=psnPrice]", function() { console.log("일"); setPrice(this);})
+.on("focus", "input[id^=psnPrice], input[id^=cmpPrice]", function() { console.log("이");setPrice(this);})
+.on("blur", "input[id^=psnPrice], input[id^=cmpPrice]", function() { console.log("삼");setPrice(this);});
+
+
+
+function setPrice(eventTrgt){
+    //개인지출 총 합계 계산
+    var totPsnPrice = 0;
+    var vat = 0;
+    var vatSum = 0;
+    
+    $("input[id^=psnPrice]").each(function(idx, obj){ 
+        // 금액 필드 전체를 합산하여 값을 세팅함
+        totPsnPrice += Number($(obj).val().replace(/[^0-9]/g, ""));
+        
+    })
+    $("#psnTotPrice").val(naon.string.formatComma(totPsnPrice));
+    $("#vat").val(naon.string.formatComma( Math.round(totPsnPrice*0.1)));
+    $("#vatSum").val(naon.string.formatComma(totPsnPrice+Math.round(totPsnPrice*0.1)));
+    $("#numPrice").val(naon.string.formatComma(totPsnPrice+Math.round(totPsnPrice*0.1))+" (VAT 포함)");
+    
+     //회사지출 총 합계 계산
+    var totCmpPrice = 0;
+    $("input[id^=cmpPrice]").each(function(idx, obj){ 
+        // 금액 필드 전체를 합산하여 값을 세팅함
+        totCmpPrice += Number($(obj).val().replace(/[^0-9]/g, ""));
+    })
+    $("#cmpTotPrice").val(naon.string.formatComma(totCmpPrice));
+    fn_change_hangul_money()
+}
+
+$(document).on("click", "#delPsnBtn", "#delCmpBtn", function() { 
+    // 삭제버튼 클릭시 제일 마지막 행만 지워지므로 금액 합계만 다시 계산
+    var totPsnPrice = 0;
+    $("input[id^=psnPrice]").each(function(idx, obj){ 
+        totPsnPrice += Number($(obj).val().replace(/[^0-9]/g, ""));
+    })
+    $("#psnTotPrice").val(naon.string.formatComma(totPsnPrice));
+    $("#vat").val(naon.string.formatComma( Math.round(totPsnPrice*0.1)));
+    $("#vatSum").val(naon.string.formatComma(totPsnPrice+Math.round(totPsnPrice*0.1)));
+    $("#numPrice").val(naon.string.formatComma(totPsnPrice+Math.round(totPsnPrice*0.1))+" (VAT 포함)");
+});
+
+$(document).on("click", "#delCmpBtn", function() { 
+   // 삭제버튼 클릭시 제일 마지막 행만 지워지므로 금액 합계만 다시 계산
+    var totCmpPrice = 0;
+    $("input[id^=cmpPrice]").each(function(idx, obj){ 
+        totCmpPrice += Number($(obj).val().replace(/[^0-9]/g, ""));
+    })
+    $("#cmpTotPrice").val(naon.string.formatComma(totCmpPrice));
+});
+
+$(document).on("change", function() { 
+    var tmp = event.target.id;
+    if (tmp !== "price" && tmp !== "count"){
+        var tmp2 = tmp.split("_")[1];
+        var price1 = $("#price_" + tmp2 ).val();
+        var count1 = $("#count_" + tmp2 ).val();
+        var sum1 = price1.replace(/,/g, '') * count1.replace(/,/g, '')
+     $("#psnPrice_" + tmp2).val(naon.string.formatComma(sum1));   
+     
+    }else{
+        var price = $("#price").val();
+        var count = $("#count").val();
+        var sum = price.replace(/,/g, '') * count.replace(/,/g, '')
+
+        $("#psnPrice").val(naon.string.formatComma(sum));
+    
+    }
+       
+    setPrice(this);
+    fn_change_hangul_money();
+
+});
+
+/*
+// 영업관리카드 팝업
+$(document).on("click", "#Call_SalesCard", function() { 
+    var url = "https://gw.metabuild.co.kr/ekp/scr/smw/smwWorkMain?display=c&listType=BOX&srchId=WB8694734721140387372";
+    var popHeight = 700;                                      // 띄울 팝업창 높이   
+    var popWidth = 1400;                                       // 띄울 팝업창 너비
+    var winHeight = document.body.clientHeight;	  // 현재창의 높이
+    var winWidth = document.body.clientWidth;	  // 현재창의 너비
+    var winX = window.screenLeft;	                          // 현재창의 x좌표
+    var winY = window.screenTop;	                          // 현재창의 y좌표
+    
+    var popX = winX + (winWidth - popWidth)/2;
+    var popY = winY + (winHeight - popHeight)/2;
+    
+    window.open(url, "영업관리카드",  "top="+popY+", left="+popX+",width="+popWidth+",height="+popHeight+", scrollbars=yes,resizable=yes");
+
+}); */
+

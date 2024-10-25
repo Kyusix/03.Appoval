@@ -23,17 +23,26 @@ $('#p2').change(function() {
 
 $('#p4').change(function() {
     getInputValue();
+    setPrice(this);
 });
 
 $('#bgnde').change(function() {
     dateCnt();
-    setPrice(this);
 });
 
 $('#endde').change(function() {
     dateCnt();
     setPrice(this);
 });
+
+$('#DCYN1').change(function() {
+    setPrice(this);
+});
+
+$('#DCYN2').change(function() {
+    setPrice(this);
+});
+
 
 
 function getInputValue() {
@@ -127,8 +136,8 @@ $("#LastRate1").attr("placeholder", "자동");
 $("#RateGap1").attr("placeholder", "자동");
 
 $("#RateProductpsnTotPrice1").attr("placeholder", "좌측 요율 값을 입력하세요.");
-$("#SpecialDiscount1").attr("placeholder", "직접입력, 없으면 N 선택");
-$("#SpecialDiscount2").attr("placeholder", "직접입력, 없으면 N 선택");
+$("#SpecialDiscount1").attr("placeholder", "직접입력(만단위까지), 없으면 N 선택");
+$("#SpecialDiscount2").attr("placeholder", "직접입력(만단위까지), 없으면 N 선택");
 
 // 나열된 input 값들이 change, focus, blur(포커스 아웃) 될때마다 setPrice 실행(값 다시 셋팅)
 
@@ -145,6 +154,9 @@ function setPrice(eventTrgt){
     var contractPrice = 0;
     var ToTcontractPrice = 0;
     var MaintainRate1 = $("#MaintainRate1").val(); //금년 제품 유지보수 요율
+    
+    // 입력값을 숫자로 변환하고 소수점 2자리까지 표시
+    MaintainRate1 = Number(MaintainRate1).toFixed(2);
 
     $("input[id^=ProductpsnPrice]").each(function(idx, obj){ 
         // 제품금액 필드 전체를 합산하여 값을 세팅함
@@ -157,8 +169,9 @@ function setPrice(eventTrgt){
     });
     
     var RateProductpsnTotPrice1 = Math.round(totPsnPrice1*(MaintainRate1/100)); // 금년 유지보수 요율에 따른 제품 유지보수액 계산
-    var SpecialDiscount1 = $("#SpecialDiscount1").val().replace(/[^0-9]/g, ""); //제품 유지보수 특별할인 사용자 입력값
-    var SpecialDiscount2 = $("#SpecialDiscount2").val().replace(/[^0-9]/g, ""); //개발 유지보수 특별할인 사용자 입력값
+    
+    var SpecialDiscount1 = $("#SpecialDiscount1").val().replace(/[^0-9]/g, "").substring(0, 5); //제품 유지보수 특별할인 사용자 입력값(다섯자리)
+    var SpecialDiscount2 = $("#SpecialDiscount2").val().replace(/[^0-9]/g, "").substring(0, 5); //개발 유지보수 특별할인 사용자 입력값(다섯자리)
     
     var M = $("#M").val().replace(/[^0-9.]/g, "");
     var Y = M / 12
@@ -175,14 +188,10 @@ function setPrice(eventTrgt){
     var iscontractPrice = $("#contractPrice").val(); //금년도 계약금액 호출
     var ContractPriceGap = iscontractPrice.replace(/,/g, '') - LastContractPrice.replace(/,/g, ''); // 전년도 유지보수 금액 차이 계산
     var LastRate1 = (LastContractPrice / totPsnPrice1 * 100).toFixed(2); // 직전년도 제품 유지보수 요율 자동계산
-
-    // 소수점 첫째 자리는 유지하고, 마지막 둘째 자리가 0이면 제거
-    LastRate1 = LastRate1.replace(/\.(\d*?)0$/, '.$1');
-
     var RateGap1 = MaintainRate1.replace(/,/g, '') - LastRate1.replace(/,/g, ''); // 전년도 제품 유지보수 요율 차이 계산
-
-    // 소수점 첫째 자리는 유지하고, 마지막 둘째 자리가 0이면 제거
-    RateGap1 = parseFloat(RateGap1.toFixed(2)).toString();
+    
+    // 소수점 이하 2자리까지 표시
+    RateGap1 = parseFloat(RateGap1).toFixed(2);
 
     $("#ProductpsnTotPrice").val(naon.string.formatComma(totPsnPrice1));
     $("#LaborpsnTotPrice").val(naon.string.formatComma(totPsnPrice2));
@@ -205,27 +214,41 @@ function setPrice(eventTrgt){
     
     // 신규계약 건, 전년유지보수사업 없음
     if ($("#p4").val() == "신규계약"){ 
-        $("#LastContractPrice").val(naon.string.formatComma("신규유지보수/값없음"));       
-        $("#ContractPriceGap").val(naon.string.formatComma("신규유지보수/차이없음"));
-        $("#LastRate1").val(naon.string.formatComma("없음")); 
-
-        $("#RateGap1").val(naon.string.formatComma("없음"));      
- 
+        $("#LastContractPrice").val(naon.string.formatComma("신규유지보수/값없음"));  
         $("#LastContractPrice").prop("disabled", true);
+        $("#ContractPriceGap").val(naon.string.formatComma("신규유지보수/차이없음"));
+        $("#LastRate1").val(naon.string.formatComma("없음"));
         $("#LastRate1").prop("disabled", true);
+        $("#RateGap1").val(naon.string.formatComma("없음"));      
 
-    
     }else{
-        $("#LastContractPrice").prop("disabled", false);
-
-        $("#LastRate1").val(naon.string.formatComma(LastRate1));
+        $("#LastContractPrice").val(naon.string.formatComma(LastContractPrice));
+        $("#LastContractPrice").prop("disabled", false); // #LastContractPrice의 disabled 속성 해제
         $("#ContractPriceGap").val(naon.string.formatComma(ContractPriceGap)); // 금년 계약금액 - 직전년도 계약금액 차액노출 
+        $("#LastRate1").val(naon.string.formatComma(LastRate1)); //직전년도 제품 유지보수 요율 계산결과 노출        
         $("#RateGap1").val(naon.string.formatComma(RateGap1)); //금년 제품 유지보수요율 - 직전년도 제품 유지보수 요율 차이노출
-
     }
+    
+    if ($("#DCYN1").val() == "1"){ 
+    // 제품절사여부Event
+    $("#SpecialDiscount1").val("절사없음");
+    $("#SpecialDiscount1").prop("disabled", true);
+    } else {
+    $("#SpecialDiscount1").val(naon.string.formatComma(SpecialDiscount1));
+    $("#SpecialDiscount1").prop("disabled", false);
+    }
+
+    if ($("#DCYN2").val() == "1"){ 
+    // 개발절사여부Event
+    $("#SpecialDiscount2").val("절사없음");
+    $("#SpecialDiscount2").prop("disabled", true);
+    } else {
+    $("#SpecialDiscount2").val(naon.string.formatComma(SpecialDiscount2));
+    $("#SpecialDiscount2").prop("disabled", false);
+    }
+    
     fn_change_hangul_money(contractPrice);
 }
-
 
 
 $(document).on("change", "tr[data-repeat-group-id^=1674176942716]", function() {
@@ -269,24 +292,6 @@ $(document).on("change", "tr[data-repeat-group-id^=1674201356210]", function() {
     fn_change_hangul_money();
 });
 
-$(document).on("change", "#DCYN1", function() { 
-    // 제품절사여부Event
-    $("#SpecialDiscount1").val('');
-    var isDiscount1 = $("#DCYN1").val() === "1" ? true : false;
-    $("#SpecialDiscount1").prop("disabled", isDiscount1);
-    $("#SpecialDiscount1").val(naon.string.formatComma("차감없음", isDiscount1));
-    setPrice(this);
-    });
-    
-$(document).on("change", "#DCYN2", function() { 
-    // 개발절사여부Event
-    $("#SpecialDiscount2").val('');
-    var isDiscount2 = $("#DCYN2").val() === "1" ? true : false;
-    $("#SpecialDiscount2").prop("disabled", isDiscount2);
-    $("#SpecialDiscount2").val(naon.string.formatComma("차감없음", isDiscount2));
-    setPrice(this);
-    });
-    
 $(document).on("change", "#select_WonUSD", function() { 
     // 총 계약금액 통화 변경
     $("#select_WonUSD").val() === "0" ? fn_change_hangul_money() : $("#korPrice").val(usdTxt);

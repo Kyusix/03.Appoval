@@ -69,31 +69,34 @@ $("#P22").attr("disabled", true);
 $("#date_expire").prop("disabled", true);
 $("#numPrice").attr("disabled", true);
 $("#korPrice").attr("disabled", true);
-$("#ProductpsnPrice").attr("disabled", true);
-$("#LaborpsnPrice").attr("disabled", true);
-$("#ProductpsnTotPrice").attr("disabled", true);
-$("#LaborpsnTotPrice").attr("disabled", true);
 
 
 $("#M").attr("disabled", true);
-$("#sumProduct").attr("disabled", true);
+
 $("#sumLaboretc").attr("disabled", true);
 $("#contractPrice").attr("disabled", true);
+
+$("#LaborpsnTotPrice").attr("disabled", true);
+$("#LaborpsnPrice").attr("disabled", true);
 $("#bill").attr("disabled", true);
+
 
 $("#p1").attr("placeholder", "예) LG CNS");
 $("#p2").attr("placeholder", "예) 보건복지부 사회보장정보원");
 $("#p3").attr("placeholder", "예) 차세대 사회보장정보시스템 구축사업");
 
 $("#M").attr("placeholder", "자동");
-$("#sumProduct").attr("placeholder", "하단 입력값에 따라 자동입력");
+
 $("#sumLaboretc").attr("placeholder", "하단 입력값에 따라 자동입력");
 $("#contractPrice").attr("placeholder", "하단 입력값에 따라 자동입력");
 $("#LaborCount").attr("placeholder", "소수가능");
 
 $("#bill").attr("placeholder", "총 계약금액(A) * 청구율에 따라 자동산출");
 
-$("#LicenseNum").attr("placeholder", "제품 다수일 경우 아래 '납품상세'에 입력");
+$("#LicenseNum").attr("placeholder", "인건비도 관련 제품 라이선스 기입 필수");
+
+$("#Detail").attr("placeholder", "설치일정 등 세부내용 및 인건비 관련 제품정보 입력");
+
 
 // 나열된 input 값들이 change, focus, blur(포커스 아웃) 될때마다 setPrice 실행(값 다시 셋팅)
 
@@ -105,20 +108,12 @@ $(document).on("click", "#delPsnBtn", function() {setPrice(this);});
 
 function setPrice(eventTrgt){
     //견적 총 합계 계산
-    var totPsnPrice1 = 0;
     var totPsnPrice2 = 0;
-    var contractPrice = 0;
 
     var billrate = $("#billrate").val(); //청구율
 
-    $("input[id^=ProductpsnPrice]").each(function(idx, obj){ 
-        // 제품금액 필드 전체를 합산하여 값을 세팅함
-        totPsnPrice1 += Number($(obj).val().replace(/[^0-9]/g, ""));
-        
-    });
-    
     $("input[id^=LaborpsnPrice]").each(function(idx, obj){ 
-        // 인건비금액 필드 전체를 합산하여 값을 세팅함
+        // 금액 필드 전체를 합산하여 값을 세팅함
         totPsnPrice2 += Number($(obj).val().replace(/[^0-9]/g, ""));
         
     });
@@ -126,8 +121,7 @@ function setPrice(eventTrgt){
     var P11 = $("#p1").val();
     var P22 = $("#p2").val();
     
-    contractPrice = totPsnPrice1 + totPsnPrice2;
-    
+    contractPrice = Math.floor(totPsnPrice2 / 1000) * 1000;
 
     var billprice = Math.round(contractPrice*(billrate/100)); // 청구요율에 따른 당해청구금액 계산
     
@@ -135,10 +129,7 @@ function setPrice(eventTrgt){
     $("#P11").val(P11);
     $("#P22").val(P22);
     
-    $("#ProductpsnTotPrice").val(naon.string.formatComma(totPsnPrice1));
     $("#LaborpsnTotPrice").val(naon.string.formatComma(totPsnPrice2));
-
-    $("#sumProduct").val(naon.string.formatComma(totPsnPrice1));
     $("#sumLaboretc").val(naon.string.formatComma(totPsnPrice2));
     $("#contractPrice").val(naon.string.formatComma(contractPrice));
 
@@ -189,30 +180,9 @@ $(document).on("change", "tr[data-repeat-group-id^=1674113007572]", function() {
 });
 
 
-$(document).on("change", "tr[data-repeat-group-id^=1674176942716]", function() {
+$(document).on("change", "tr[data-repeat-group-id^=1713922601201]", function() {
     var tmp = event.target.id;
-     //  제품계약내역 수량, 단가 입력 시
-     if (tmp !== "ProductPrice" && tmp !== "ProductCount"){
-        var tmp2 = tmp.split("_")[1];
-        var ProductPrice1 = $("#ProductPrice_" + tmp2 ).val();
-        var ProductCount1 = $("#ProductCount_" + tmp2 ).val();
-        var sum1 = ProductPrice1.replace(/,/g, '') * ProductCount1.replace(/,/g, '');
-        $("#ProductpsnPrice_" + tmp2).val(naon.string.formatComma(sum1));
-    }else{
-        var ProductPrice = $("#ProductPrice").val();
-        var ProductCount = $("#ProductCount").val();
-        var sum = ProductPrice.replace(/,/g, '') * ProductCount.replace(/,/g, '');
-
-        $("#ProductpsnPrice").val(naon.string.formatComma(sum));
-    }
-    setPrice(this);
-    fn_change_hangul_money();
-
-});
-
-$(document).on("change", "tr[data-repeat-group-id^=1674176957581]", function() {
-    var tmp = event.target.id;
-    // 인건비/기타 계약내역 수량, 단가 입력 시
+    // 세부내역 수량, 단가 입력 시
     if (tmp !== "LaborPrice" && tmp !== "LaborCount") {
         var tmp2 = tmp.split("_")[1];
         var LaborPrice1 = $("#LaborPrice_" + tmp2).val();

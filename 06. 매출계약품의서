@@ -1,8 +1,8 @@
-// 문서 진입할때 적용할 내용
 $(document).ready(function() {
-    $('#eapDocReg_docSubject').attr('disabled',true); /*제목입력잠금*/
+    $('#eapDocReg_docSubject').attr('disabled', true); /*제목입력잠금*/
+    $("#eapDocReg_docSubject").attr("placeholder", "아래 기입된 관련사업 및 품목에 따라 자동입력됩니다.");
+    setPrice(); // 문서 진입 시 setPrice 함수 호출
 });
-$("#eapDocReg_docSubject").attr("placeholder", "아래 기입된 관련사업 및 품목에 따라 자동입력됩니다.");
 
 $(document).change(function() {
     setPrice(this);
@@ -119,10 +119,10 @@ function setPrice(eventTrgt){
         // 금액 필드 전체를 합산하여 값을 세팅함
         totPsnPrice2 += Number($(obj).val().replace(/[^0-9]/g, ""));
     });
-    
+
     let P11 = $("#p1").val();
     let P22 = $("#p2").val();
-    
+
     let discount = parseFloat($("#Discount").val().replace(/,/g, '')) || 0; // Ensure Discount is defined and correctly formatted
     let lastPrice = totPsnPrice2 - discount;
     let contractPrice = Math.floor(lastPrice / 1000) * 1000;
@@ -130,28 +130,27 @@ function setPrice(eventTrgt){
 
     $("#P11").val(P11);
     $("#P22").val(P22);
-    
+
     $("#LaborpsnTotPrice").val(naon.string.formatComma(totPsnPrice2));
     $("#sumLaboretc").val(naon.string.formatComma(totPsnPrice2));
 
     $("#LastPrice").val(naon.string.formatComma(lastPrice));
-    $("#contractPrice").val(naon.string.formatComma(lastPrice));
+    $("#contractPrice").val(naon.string.formatComma(contractPrice));
 
-    $("#numPrice").val(naon.string.formatComma(lastPrice) + " (VAT 별도)");
+    $("#numPrice").val(naon.string.formatComma(contractPrice) + " (VAT 별도)");
 
     $("#bill").val(naon.string.formatComma(billprice));
-    
+
     if ($("#DCYN").val() == "1"){ 
-    // 할인여부Event
-    $("#Discount").val("없음");
-    $("#Discount").prop("disabled", true);
+        // 할인여부Event
+        $("#Discount").val("없음");
+        $("#Discount").prop("disabled", true);
     } else {
-    $("#Discount").val(naon.string.formatComma(discount));
-    $("#Discount").prop("disabled", false);
+        $("#Discount").val(naon.string.formatComma(discount));
+        $("#Discount").prop("disabled", false);
     }
-    
-    
-    fn_change_hangul_money(lastPrice); // Ensure lastPrice is used correctly
+
+    fn_change_hangul_money(contractPrice); // Ensure contractPrice is used correctly
 }
 
 $(document).on("change", "#Discount", function(event) {

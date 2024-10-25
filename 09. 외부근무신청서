@@ -34,45 +34,63 @@ $(document).ready(function() {
         $("#workday").datepicker('option', 'minDate', -2);
     }
 
+    $("#eapDocReg_docSubject").attr("placeholder", "아래 기입된 항목에 따라 자동입력됩니다.");
+
     $("#site").attr("placeholder", "예) 한국교육학술정보원(KERIS)");
-    $("#area").attr("placeholder", "예) 시(도) 구(군) 순");
+    $("#area").attr("placeholder", "예) 시(도) 구(군) 까지");
     $("#purpose").attr("placeholder", "현재 수행 중인 사업기간 내 사업이 존재하는 경우 '사업명'을 기재");
 
 
     // 이벤트 핸들러 등록
     
     $('#type').on('change', function() {
-        handleTypeChange()
-        getInputValue();
+        handleTypeChange();
         dateCnt();
+        getInputValue();
     });
     
     $('#site').on('change', function() {
-        getInputValue();
         dateCnt();
+        getInputValue();
     });
 
     $('#bgnde').on('change', function() {
-        getInputValue();
         dateCnt();
+        getInputValue();
     });
 
     $('#endde').on('change', function() {
-        getInputValue();
         dateCnt();
+        getInputValue();
     });
     
     $('#area').on('change', function() {
-        getInputValue();
         dateCnt();
+        getInputValue();
     });    
     
     $('#purpose').on('change', function() {
-        getInputValue();
         dateCnt();
+        getInputValue();
     });    
     
 });
+
+function getInputValue() {
+    var a = $("#type").val();
+    var b = $("#site").val();
+    var c = $("#bgnde").val();
+    var d = $("#endde").val();
+    var userInputarea = $("#area").val();
+    var userInput = userInputarea.replace(/[^\w\s,ㄱ-힣]/g, '');
+
+    const dateResult = $('#date').val();  // Get the date result
+
+    // 결과 및 날짜를 표시
+    $('#eapDocReg_docSubject').val(b + " 외부근무신청의 건" + " (" + userInput + " / " + a + " / " + c + " ~ " + d + " / " + dateResult + " 일)");
+    $('#eapDocReg_docSubject').focus();
+    $('#area').val(userInput);
+}
 
 function handleTypeChange() {
     var typeValue = $("#type").val();
@@ -89,23 +107,8 @@ function handleTypeChange() {
     }
 }
 
-function getInputValue() {
-    var a = $("#type").val();
-    var b = $("#site").val();
-    var c = $("#bgnde").val();
-    var d = $("#endde").val();
-    var userInputarea = $("#area").val();
-    var userInput = userInputarea.replace(/[^\w\s,ㄱ-힣]/g, '');
-
-    // 결과를 표시
-    $('#eapDocReg_docSubject').val(b + " 외부근무신청의 건" + " (" + userInput + " / " + a + " / " + c + " ~ " + d + ")");
-    $('#eapDocReg_docSubject').focus();
-    $('#area').val(userInput);
-}
-
-// 업무수행계획 날짜 입력 제한
+    // 업무수행계획 날짜 입력 제한
 $(document).on("change", "tr[data-repeat-group-id^=1705988821905]", function(event) {
-    
     if(loginUserInfo.mobileAppLoginYn == "Y" || naon.util.isMobileUrl() || naon.isMobile.any()){
         $('#frm_DtBox').DateTimePicker({
 			language : loginUserInfo.langCd,
@@ -146,10 +149,11 @@ $(document).on("change", "tr[data-repeat-group-id^=1705988821905]", function(eve
         }
     }
 });
+        
 
 // 날짜계산
 function dateCnt() {
-    // 시작일은 과거 7일 전까지 / 종료일은 오늘 이전의 날짜 선택 불가능하게 설정
+    // 시작일 종료일은 오늘포함 과거 3일 전보다 과거 날짜 선택 불가능하게 설정
     if(loginUserInfo.mobileAppLoginYn == "Y" || naon.util.isMobileUrl() || naon.isMobile.any()){
         $('#frm_DtBox').DateTimePicker({
 			language : loginUserInfo.langCd,
@@ -178,7 +182,7 @@ function dateCnt() {
 		});
     }else{
         $('#bgnde').datepicker('option', 'minDate', -2);
-        $('#endde').datepicker('option', 'minDate', 0);
+        $('#endde').datepicker('option', 'minDate', -2);
     }
     
     var date1 = $('#bgnde').datepicker('getDate');

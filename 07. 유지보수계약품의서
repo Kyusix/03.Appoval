@@ -1,0 +1,324 @@
+// 문서 진입할때 적용할 내용
+$(document).ready(function() {
+    $('#eapDocReg_docSubject').attr('disabled',true); /*제목입력잠금*/
+});
+$("#eapDocReg_docSubject").attr("placeholder", "아래 기입된 관련사업 및 품목에 따라 자동입력됩니다.");
+
+$(document).change(function() {
+    setPrice(this);
+});
+
+// 각 아이디 값마다 change 이벤트 적용
+$('#p3').change(function() {
+    getInputValue();
+});
+
+$('#p1').change(function() {
+    getInputValue();
+});
+ 
+$('#p2').change(function() {
+    getInputValue();
+});
+
+$('#p4').change(function() {
+    getInputValue();
+});
+
+$('#bgnde').change(function() {
+    dateCnt();
+});
+
+$('#endde').change(function() {
+    dateCnt();
+});
+
+
+function getInputValue() {
+    
+       $('#eapDocReg_docSubject').attr('disabled',true); /*제목입력잠금*/
+
+		var docSubject = $('#eapDocReg_docSubject').val();
+		var a = $('#p3').val();
+		var c = $('#p1').val();
+		var d = $('#p2').val();
+		var e = $('#p4').val();		
+		
+		var P11 = $("#p1").val();
+        var P22 = $("#p2").val();
+        var P222 = $("#p2").val();
+
+        $('#eapDocReg_docSubject').val(d + " " + a + " " + e + " 체결의 건 (고객사 : " + c + ")");
+        
+        $('#eapDocReg_docSubject').focus();
+        
+        $("#P11").val(P11);
+        $("#P22").val(P22);
+        $("#P222").val(P22);
+}
+
+// 날짜계산
+function dateCnt() {
+    const date1 = $('#bgnde').val();
+    const date2 = $('#endde').val();
+
+    const stDate = new Date(date1);
+    const endDate = new Date(date2);
+
+    // 날짜 차이를 일 단위로 계산
+    const diffInDays = Math.ceil((endDate - stDate) / (1000 * 60 * 60 * 24));
+
+    // 일 단위를 월 단위로 변환
+    const diffInMonths = diffInDays / 30.44; // 평균 월 길이
+
+    // 결과를 표시, 소수점 이하가 0이면 .0을 제거
+    $('#M').val(diffInMonths.toFixed(1).replace('.0', ''));
+}
+
+var usdTxt = '해외 미화달러 견적 건(현재환율 기타사항 기재)';
+
+$("#P11").attr("disabled", true);
+$("#P22").attr("disabled", true);
+
+$("#numPrice").attr("disabled", true);
+$("#korPrice").attr("disabled", true);
+$("#ProductpsnPrice").attr("disabled", true);
+$("#LaborpsnPrice").attr("disabled", true);
+$("#ProductpsnTotPrice").attr("disabled", true);
+$("#LaborpsnTotPrice").attr("disabled", true);
+$("#RateProductpsnTotPrice1").prop("disabled", true);
+
+$("#disProductpsnTotPrice1").prop("disabled", true);
+
+$("#sumProduct").attr("disabled", true);
+$("#sumLaboretc").attr("disabled", true);
+$("#contractPrice").attr("disabled", true);
+$("#M").attr("disabled", true);
+$("#MunitPrice").attr("disabled", true);
+
+$("#MaintainRate1View").attr("disabled", true);
+$("#LastRate1").attr("disabled", true);
+$("#ContractPriceGap").attr("disabled", true);
+$("#RateGap1").attr("disabled", true);
+
+$("#p1").attr("placeholder", "예) 솔리데오시스템즈");
+$("#p2").attr("placeholder", "예) 한국지역정보개발원");
+$("#p3").attr("placeholder", "예) 지방재정관리시스템 유지관리 사업 연계SW 기술지원");
+
+$("#sumProduct").attr("placeholder", "하단 입력값에 따라 자동입력");
+$("#sumLaboretc").attr("placeholder", "하단 입력값에 따라 자동입력");
+$("#contractPrice").attr("placeholder", "제품유지보수 + 인건비 합산");
+$("#M").attr("placeholder", "자동");
+$("#MunitPrice").attr("placeholder", "자동입력");
+
+$("#ExpectProfitRate").attr("placeholder", "자동입력");
+$("#MaintainRate1View").attr("placeholder", "자동");
+$("#MaintainRate2View").attr("placeholder", "자동");
+$("#LastContractPrice").attr("placeholder", "연장) 사업인 경우 직접입력");
+$("#ContractPriceGap").attr("placeholder", "자동입력");
+$("#LastRate1").attr("placeholder", "자동");
+$("#RateGap1").attr("placeholder", "자동");
+
+$("#RateProductpsnTotPrice1").attr("placeholder", "좌측 요율 값을 입력하세요.");
+$("#SpecialDiscount1").attr("placeholder", "직접입력, 없으면 N 선택");
+$("#SpecialDiscount2").attr("placeholder", "직접입력, 없으면 N 선택");
+
+// 나열된 input 값들이 change, focus, blur(포커스 아웃) 될때마다 setPrice 실행(값 다시 셋팅)
+
+$(document)
+.on("change", "input[id^=psnPrice], input[id^=ProductPrice], input[id^=LaborPrice], input[id^=rate], input[id^=sum_]", function() { setPrice(this);})
+.on("focus", "input[id^=psnPrice], input[id^=ProductPrice], input[id^=LaborPrice], input[id^=rate], input[id^=sum_]", function() { setPrice(this);})
+.on("blur", "input[id^=psnPrice], input[id^=ProductPrice], input[id^=LaborPrice], input[id^=rate], input[id^=sum_]", function() { setPrice(this);});
+$(document).on("click", "#delPsnBtn", function() {setPrice(this);});
+
+function setPrice(eventTrgt){
+    //견적 총 합계 계산
+    var totPsnPrice1 = 0;
+    var totPsnPrice2 = 0;
+    var contractPrice = 0;
+    var MaintainRate1 = $("#MaintainRate1").val(); //금년 제품 유지보수 요율
+
+    $("input[id^=ProductpsnPrice]").each(function(idx, obj){ 
+        // 제품금액 필드 전체를 합산하여 값을 세팅함
+        totPsnPrice1 += Number($(obj).val().replace(/[^0-9]/g, ""));
+    });
+
+    $("input[id^=LaborpsnPrice]").each(function(idx, obj){ 
+        // 인건비금액 필드 전체를 합산하여 값을 세팅함
+        totPsnPrice2 += Number($(obj).val().replace(/[^0-9]/g, ""));
+    });
+    
+    var RateProductpsnTotPrice1 = Math.round(totPsnPrice1*(MaintainRate1/100)); // 금년 유지보수 요율에 따른 제품 유지보수액 계산
+    var SpecialDiscount1 = $("#SpecialDiscount1").val().replace(/[^0-9]/g, ""); //제품 유지보수 특별할인 사용자 입력값
+    var SpecialDiscount2 = $("#SpecialDiscount2").val().replace(/[^0-9]/g, ""); //개발 유지보수 특별할인 사용자 입력값
+
+    disProductpsnTotPrice1 = RateProductpsnTotPrice1-SpecialDiscount1; // 최종 제품 유지보수 매출 = 금년 유지보수 요율에 따른 제품 유지보수액 계산 - 특별할인 차감
+    disProductpsnTotPrice2 = totPsnPrice2-SpecialDiscount2; // 최종 개발 유지보수 매출 = 개발 유지보수액 계산 - 특별할인 차감
+    contractPrice = disProductpsnTotPrice1 + disProductpsnTotPrice2; // 총계약금액 계산
+
+    var LastContractPrice = $("#LastContractPrice").val().replace(/[^0-9]/g, ""); //직전년도 계약금액 입력
+    var iscontractPrice = $("#contractPrice").val(); //금년도 계약금액 호출
+    var ContractPriceGap = iscontractPrice.replace(/,/g, '') - LastContractPrice.replace(/,/g, ''); // 전년도 유지보수 금액 차이 계산
+    var LastRate1 = (LastContractPrice / totPsnPrice1 * 100).toFixed(2); //직전년도 제품 유지보수 요율 자동계산
+
+    var RateGap1 = MaintainRate1.replace(/,/g, '') - LastRate1.replace(/,/g, ''); // 전년도 제품 유지보수 요율 차이 계산   
+
+    var M = $("#M").val().replace(/[^0-9.]/g, "");
+    var MunitPrice =  Math.round(contractPrice / M * (M/12)); // 월 단가 계산
+
+    $("#ProductpsnTotPrice").val(naon.string.formatComma(totPsnPrice1));
+    $("#LaborpsnTotPrice").val(naon.string.formatComma(totPsnPrice2));
+
+    $("#sumProduct").val(naon.string.formatComma(disProductpsnTotPrice1));
+    $("#sumLaboretc").val(naon.string.formatComma(disProductpsnTotPrice2));
+    $("#MunitPrice").val(naon.string.formatComma(MunitPrice)); //월단가 계산
+    $("#contractPrice").val(naon.string.formatComma(contractPrice));
+
+    $("#numPrice").val(naon.string.formatComma(contractPrice + " (VAT 별도)"));
+
+    $("#MaintainRate1View").val(naon.string.formatComma(MaintainRate1)); //금년 제품 유지보수 요율 노출
+
+    $("#RateProductpsnTotPrice1").val(naon.string.formatComma(RateProductpsnTotPrice1)); //금년 유지보수 요율에 따른 제품 유지보수액 노출
+
+    $("#disProductpsnTotPrice1").val(naon.string.formatComma(disProductpsnTotPrice1)); //금년 최종 제품 유지보수액 노출
+    $("#disProductpsnTotPrice2").val(naon.string.formatComma(disProductpsnTotPrice2)); //금년 최종 인건비 유지보수액 노출
+    
+    // 신규계약 건, 전년유지보수사업 없음
+    if ($("#p4").val() == "신규계약"){ 
+        $("#LastContractPrice").val(naon.string.formatComma("신규유지보수/값없음"));       
+        $("#ContractPriceGap").val(naon.string.formatComma("신규유지보수/차이없음"));
+        $("#LastRate1").val(naon.string.formatComma("없음")); 
+
+        $("#RateGap1").val(naon.string.formatComma("없음"));      
+ 
+        $("#LastContractPrice").prop("disabled", true);
+        $("#LastRate1").prop("disabled", true);
+
+    
+    }else{
+        $("#LastContractPrice").prop("disabled", false);
+
+        $("#LastRate1").val(naon.string.formatComma(LastRate1));
+        $("#ContractPriceGap").val(naon.string.formatComma(ContractPriceGap)); // 금년 계약금액 - 직전년도 계약금액 차액노출 
+        $("#RateGap1").val(naon.string.formatComma(RateGap1.toFixed(2))); //금년 제품 유지보수요율 - 직전년도 제품 유지보수 요율 차이노출
+
+    }
+    fn_change_hangul_money(contractPrice);
+}
+
+
+
+$(document).on("change", "tr[data-repeat-group-id^=1674176942716]", function() {
+    var tmp = event.target.id;
+     //  제품계약내역 수량, 단가 입력 시
+     if (tmp !== "ProductPrice" && tmp !== "ProductCount"){
+        var tmp2 = tmp.split("_")[1];
+        var ProductPrice1 = $("#ProductPrice_" + tmp2 ).val();
+        var ProductCount1 = $("#ProductCount_" + tmp2 ).val();
+        var sum1 = ProductPrice1.replace(/,/g, '') * ProductCount1.replace(/,/g, '');
+        $("#ProductpsnPrice_" + tmp2).val(naon.string.formatComma(sum1));
+    }else{
+        var ProductPrice = $("#ProductPrice").val();
+        var ProductCount = $("#ProductCount").val();
+        var sum = ProductPrice.replace(/,/g, '') * ProductCount.replace(/,/g, '');
+
+        $("#ProductpsnPrice").val(naon.string.formatComma(sum));
+    }
+    setPrice(this);
+    fn_change_hangul_money();
+});
+
+$(document).on("change", "tr[data-repeat-group-id^=1674201356210]", function() {
+    var tmp = event.target.id;
+    
+    // 인건비/기타 계약내역 수량, 단가 입력 시
+    if (tmp !== "LaborPrice" && tmp !== "LaborCount") {
+        var tmp2 = tmp.split("_")[1];
+        var LaborPrice1 = $("#LaborPrice_" + tmp2).val();
+        var LaborCount1 = $("#LaborCount_" + tmp2).val();
+        var sum1 = LaborPrice1.replace(/,/g, '') * LaborCount1.replace(/,/g, '');
+        $("#LaborpsnPrice_" + tmp2).val(naon.string.formatComma(sum1));
+    } else {
+        var LaborPrice = $("#LaborPrice").val();
+        var LaborCount = $("#LaborCount").val();
+        var sum = LaborPrice.replace(/,/g, '') * LaborCount.replace(/,/g, '');
+        $("#LaborpsnPrice").val(naon.string.formatComma(sum));
+    }
+
+    setPrice(this);
+    fn_change_hangul_money();
+});
+
+$(document).on("change", "#DCYN1", function() { 
+    // 제품절사여부Event
+    $("#SpecialDiscount1").val('');
+    var isDiscount1 = $("#DCYN1").val() === "1" ? true : false;
+    $("#SpecialDiscount1").prop("disabled", isDiscount1);
+    $("#SpecialDiscount1").val(naon.string.formatComma("차감없음", isDiscount1));
+    setPrice(this);
+    });
+    
+$(document).on("change", "#DCYN2", function() { 
+    // 개발절사여부Event
+    $("#SpecialDiscount2").val('');
+    var isDiscount2 = $("#DCYN2").val() === "1" ? true : false;
+    $("#SpecialDiscount2").prop("disabled", isDiscount2);
+    $("#SpecialDiscount2").val(naon.string.formatComma("차감없음", isDiscount2));
+    setPrice(this);
+    });
+    
+$(document).on("change", "#select_WonUSD", function() { 
+    // 총 계약금액 통화 변경
+    $("#select_WonUSD").val() === "0" ? fn_change_hangul_money() : $("#korPrice").val(usdTxt);
+});
+
+// 1 ~ 9 한글 표시
+var arrNumberWord = new Array("","일","이","삼","사","오","육","칠","팔","구");
+// 10, 100, 100 자리수 한글 표시
+var arrDigitWord = new  Array("","십","백","천");
+// 만단위 한글 표시
+var arrManWord = new  Array("","만","억", "조");
+
+
+function fn_change_hangul_money()
+{
+    var crncy = $("#select_WonUSD").val();
+    var num_value = $("#contractPrice").val().replace(/,/g, '');
+    var num_length = num_value.length;
+
+    if(isNaN(num_value) === true){
+          return;}
+    
+    var han_value = "";
+    var man_count = 0;      // 만단위 0이 아닌 금액 카운트.
+    for(i=0; i < num_value.length; i++)
+    {
+          // 1단위의 문자로 표시.. (0은 제외)
+          var strTextWord = arrNumberWord[num_value.charAt(i)];
+          // 0이 아닌경우만, 십/백/천 표시
+          if(strTextWord !== "")
+          {
+                man_count++;
+                strTextWord += arrDigitWord[(num_length - (i+1)) % 4];
+          }
+          // 만단위마다 표시 (0인경우에도 만단위는 표시한다)
+          if(man_count !== 0 && (num_length - (i+1)) % 4 === 0)
+          {
+                man_count = 0;
+                strTextWord = strTextWord + arrManWord[(num_length - (i+1)) / 4];
+          }
+          han_value += strTextWord;
+    }
+    if(crncy === "1") {
+        $("#korPrice").val(usdTxt);
+    } else {
+        if(num_value !== "" && num_value > 0) {
+          han_value = "一金  " + han_value + "원 정";
+          $("#korPrice").val(han_value);
+        
+        } else {
+            $("#korPrice").val("");
+        }
+    }
+    //document.all.korPrice.value = han_value;
+}

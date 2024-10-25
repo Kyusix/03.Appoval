@@ -27,10 +27,12 @@ $('#p4').change(function() {
 
 $('#bgnde').change(function() {
     dateCnt();
+    setPrice(this);
 });
 
 $('#endde').change(function() {
     dateCnt();
+    setPrice(this);
 });
 
 
@@ -93,6 +95,9 @@ $("#disProductpsnTotPrice1").prop("disabled", true);
 $("#sumProduct").attr("disabled", true);
 $("#sumLaboretc").attr("disabled", true);
 $("#contractPrice").attr("disabled", true);
+$("#ToTcontractPrice").attr("disabled", true);
+
+$("#Y").attr("disabled", true);
 $("#M").attr("disabled", true);
 $("#MunitPrice").attr("disabled", true);
 
@@ -107,7 +112,9 @@ $("#p3").attr("placeholder", "예) 지방재정관리시스템 유지관리 사�
 
 $("#sumProduct").attr("placeholder", "하단 입력값에 따라 자동입력");
 $("#sumLaboretc").attr("placeholder", "하단 입력값에 따라 자동입력");
-$("#contractPrice").attr("placeholder", "제품유지보수 + 인건비 합산");
+$("#contractPrice").attr("placeholder", "년 제품유지보수 + 인건비 합산");
+$("#ToTcontractPrice").attr("placeholder", "총 제품유지보수 + 인건비 합산");
+$("#Y").attr("placeholder", "자동");
 $("#M").attr("placeholder", "자동");
 $("#MunitPrice").attr("placeholder", "자동입력");
 
@@ -136,6 +143,7 @@ function setPrice(eventTrgt){
     var totPsnPrice1 = 0;
     var totPsnPrice2 = 0;
     var contractPrice = 0;
+    var ToTcontractPrice = 0;
     var MaintainRate1 = $("#MaintainRate1").val(); //금년 제품 유지보수 요율
 
     $("input[id^=ProductpsnPrice]").each(function(idx, obj){ 
@@ -151,29 +159,40 @@ function setPrice(eventTrgt){
     var RateProductpsnTotPrice1 = Math.round(totPsnPrice1*(MaintainRate1/100)); // 금년 유지보수 요율에 따른 제품 유지보수액 계산
     var SpecialDiscount1 = $("#SpecialDiscount1").val().replace(/[^0-9]/g, ""); //제품 유지보수 특별할인 사용자 입력값
     var SpecialDiscount2 = $("#SpecialDiscount2").val().replace(/[^0-9]/g, ""); //개발 유지보수 특별할인 사용자 입력값
+    
+    var M = $("#M").val().replace(/[^0-9.]/g, "");
+    var Y = M / 12
 
     disProductpsnTotPrice1 = RateProductpsnTotPrice1-SpecialDiscount1; // 최종 제품 유지보수 매출 = 금년 유지보수 요율에 따른 제품 유지보수액 계산 - 특별할인 차감
     disProductpsnTotPrice2 = totPsnPrice2-SpecialDiscount2; // 최종 개발 유지보수 매출 = 개발 유지보수액 계산 - 특별할인 차감
-    contractPrice = disProductpsnTotPrice1 + disProductpsnTotPrice2; // 총계약금액 계산
+    disProductpsnTotPrice3 = Math.round((disProductpsnTotPrice2 / M) * 12);
+    contractPrice = disProductpsnTotPrice1 + disProductpsnTotPrice3; // 연 매출금액 계산
+    ToTcontractPrice = Math.round(contractPrice * Y); // 총 수주금액 계산(소수점 첫째자리 반올림)
+    
+    var MunitPrice =  Math.round(contractPrice / M * (M/12)); // 월 단가 계산
 
     var LastContractPrice = $("#LastContractPrice").val().replace(/[^0-9]/g, ""); //직전년도 계약금액 입력
     var iscontractPrice = $("#contractPrice").val(); //금년도 계약금액 호출
     var ContractPriceGap = iscontractPrice.replace(/,/g, '') - LastContractPrice.replace(/,/g, ''); // 전년도 유지보수 금액 차이 계산
-    var LastRate1 = (LastContractPrice / totPsnPrice1 * 100).toFixed(2); //직전년도 제품 유지보수 요율 자동계산
+    var LastRate1 = (LastContractPrice / totPsnPrice1 * 100).toFixed(2); // 직전년도 제품 유지보수 요율 자동계산
 
-    var RateGap1 = MaintainRate1.replace(/,/g, '') - LastRate1.replace(/,/g, ''); // 전년도 제품 유지보수 요율 차이 계산   
+    // 소수점 첫째 자리는 유지하고, 마지막 둘째 자리가 0이면 제거
+    LastRate1 = LastRate1.replace(/\.(\d*?)0$/, '.$1');
 
-    var M = $("#M").val().replace(/[^0-9.]/g, "");
-    var MunitPrice =  Math.round(contractPrice / M * (M/12)); // 월 단가 계산
+    var RateGap1 = MaintainRate1.replace(/,/g, '') - LastRate1.replace(/,/g, ''); // 전년도 제품 유지보수 요율 차이 계산
+
+    // 소수점 첫째 자리는 유지하고, 마지막 둘째 자리가 0이면 제거
+    RateGap1 = parseFloat(RateGap1.toFixed(2)).toString();
 
     $("#ProductpsnTotPrice").val(naon.string.formatComma(totPsnPrice1));
     $("#LaborpsnTotPrice").val(naon.string.formatComma(totPsnPrice2));
-
+    $("#Y").val(Y.toFixed(2).replace('.00', ''));
     $("#sumProduct").val(naon.string.formatComma(disProductpsnTotPrice1));
-    $("#sumLaboretc").val(naon.string.formatComma(disProductpsnTotPrice2));
+    $("#sumLaboretc").val(naon.string.formatComma(disProductpsnTotPrice3));
+    
     $("#MunitPrice").val(naon.string.formatComma(MunitPrice)); //월단가 계산
-    $("#contractPrice").val(naon.string.formatComma(contractPrice));
-
+    $("#contractPrice").val(naon.string.formatComma(contractPrice)); //연 매출금액 계산
+    $("#ToTcontractPrice").val(naon.string.formatComma(ToTcontractPrice)); // 총 수주금액 계산
     $("#numPrice").val(naon.string.formatComma(contractPrice + " (VAT 별도)"));
 
     $("#MaintainRate1View").val(naon.string.formatComma(MaintainRate1)); //금년 제품 유지보수 요율 노출
@@ -181,7 +200,8 @@ function setPrice(eventTrgt){
     $("#RateProductpsnTotPrice1").val(naon.string.formatComma(RateProductpsnTotPrice1)); //금년 유지보수 요율에 따른 제품 유지보수액 노출
 
     $("#disProductpsnTotPrice1").val(naon.string.formatComma(disProductpsnTotPrice1)); //금년 최종 제품 유지보수액 노출
-    $("#disProductpsnTotPrice2").val(naon.string.formatComma(disProductpsnTotPrice2)); //금년 최종 인건비 유지보수액 노출
+    $("#disProductpsnTotPrice2").val(naon.string.formatComma(disProductpsnTotPrice2)); //최종 인건비 유지보수액 노출
+    $("#disProductpsnTotPrice3").val(naon.string.formatComma(disProductpsnTotPrice3)); //연간환산 인건비 유지보수액 노출
     
     // 신규계약 건, 전년유지보수사업 없음
     if ($("#p4").val() == "신규계약"){ 
@@ -200,7 +220,7 @@ function setPrice(eventTrgt){
 
         $("#LastRate1").val(naon.string.formatComma(LastRate1));
         $("#ContractPriceGap").val(naon.string.formatComma(ContractPriceGap)); // 금년 계약금액 - 직전년도 계약금액 차액노출 
-        $("#RateGap1").val(naon.string.formatComma(RateGap1.toFixed(2))); //금년 제품 유지보수요율 - 직전년도 제품 유지보수 요율 차이노출
+        $("#RateGap1").val(naon.string.formatComma(RateGap1)); //금년 제품 유지보수요율 - 직전년도 제품 유지보수 요율 차이노출
 
     }
     fn_change_hangul_money(contractPrice);

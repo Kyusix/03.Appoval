@@ -87,7 +87,7 @@ function getInputValue() {
     const dateResult = $('#date').val();  // Get the date result
 
     // 결과 및 날짜를 표시
-    $('#eapDocReg_docSubject').val(b + " 외부근무신청의 건" + " (" + userInput + " / " + a + " / " + c + " ~ " + d + " / " + dateResult + " 일)");
+    $('#eapDocReg_docSubject').val(c + "~" + d + " / " + a + " / " + b + "(" + userInput + ") 외부근무");
     $('#eapDocReg_docSubject').focus();
     $('#area').val(userInput);
 }

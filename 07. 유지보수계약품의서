@@ -116,6 +116,7 @@ $("#MaintainRate1View").attr("disabled", true);
 $("#LastRate1").attr("disabled", true);
 $("#ContractPriceGap").attr("disabled", true);
 $("#RateGap1").attr("disabled", true);
+$("#highlow").attr("disabled", true);
 
 $("#p1").attr("placeholder", "예) 솔리데오시스템즈");
 $("#p2").attr("placeholder", "예) 한국지역정보개발원");
@@ -138,8 +139,9 @@ $("#LastContractPrice").attr("placeholder", "연장) 사업인 경우 직접입�
 $("#ContractPriceGap").attr("placeholder", "자동입력");
 $("#LastRate1").attr("placeholder", "자동");
 $("#RateGap1").attr("placeholder", "자동");
+$("#highlow").attr("placeholder", "자동입력");
 
-$("#RateProductpsnTotPrice1").attr("placeholder", "좌측 요율 값을 입력하세요.");
+$("#RateProductpsnTotPrice1").attr("placeholder", "좌측 요율값 입력(소수 2자리까지)");
 $("#SpecialDiscount1").attr("placeholder", "직접입력(만단위까지), 없으면 N 선택");
 $("#SpecialDiscount2").attr("placeholder", "직접입력(만단위까지), 없으면 N 선택");
 
@@ -199,6 +201,16 @@ function setPrice(eventTrgt){
     
     // 소수점 이하 2자리까지 표시
     RateGap1 = parseFloat(RateGap1).toFixed(2);
+    
+    // RateGap1에 따라 highlow 항목 설정
+    var highlow = "";
+    if (RateGap1 < 0) {
+    highlow = "감소";
+    } else if (RateGap1 > 0) {
+    highlow = "상승";
+    } else {
+    highlow = "전년동일";
+    }
 
     $("#ProductpsnTotPrice").val(naon.string.formatComma(totPsnPrice1));
     $("#LaborpsnTotPrice").val(naon.string.formatComma(totPsnPrice2));
@@ -229,6 +241,7 @@ function setPrice(eventTrgt){
         $("#LastRate1").val(naon.string.formatComma("없음"));
         $("#LastRate1").prop("disabled", true);
         $("#RateGap1").val(naon.string.formatComma("없음"));      
+        $("#highlow").val(naon.string.formatComma("-"));      
 
     }else{
         $("#LastContractPrice").val(naon.string.formatComma(LastContractPrice));
@@ -236,6 +249,7 @@ function setPrice(eventTrgt){
         $("#ContractPriceGap").val(naon.string.formatComma(ContractPriceGap)); // 금년 계약금액 - 직전년도 계약금액 차액노출 
         $("#LastRate1").val(naon.string.formatComma(LastRate1)); //직전년도 제품 유지보수 요율 계산결과 노출        
         $("#RateGap1").val(naon.string.formatComma(RateGap1)); //금년 제품 유지보수요율 - 직전년도 제품 유지보수 요율 차이노출
+        $("#highlow").val(highlow);
     }
     
     if ($("#DCYN1").val() == "1"){ 

@@ -1,0 +1,22 @@
+ jQuery("#button_reset").click(function() { 
+        jQuery("#hidden_agent_emp_id").val("NO_SELECT"); 
+        jQuery("#input_agent_name").val(""); 
+  });
+  
+// 문서 진입할때 적용할 내용
+$(document).ready(function() {
+    $('#eapDocReg_docSubject').attr('disabled',true); /*제목입력잠금*/
+});
+
+function afterInterlockDataCallback() {
+
+		var docSubject      =   $('#eapDocReg_docSubject').val();
+		var absnTypeName    =   $('input[name=hidden_absnTypeName]').val();
+		var absnWhy         =   $('input[name=hidden_absnWhy]').val();
+		var absnCnt         =   $('input[name=hidden_absnCnt]').val();		
+        var absnBgnDate     =   $('input[name=hidden_absnBgnDate]').val().substring(2,4) + "-" + $('input[name=hidden_absnBgnDate]').val().substring(4,6) + "-" + $('input[name=hidden_absnBgnDate]').val().substring(6,8);
+        var absnEndDate     =   $('input[name=hidden_absnEndDate]').val().substring(2,4) + "-" + $('input[name=hidden_absnEndDate]').val().substring(4,6) + "-" + $('input[name=hidden_absnEndDate]').val().substring(6,8);
+
+        $('#eapDocReg_docSubject').val(absnWhy +" "+"(" + absnTypeName + " / "+ absnBgnDate +" ~ "+ absnEndDate + " / 연차사용 : " + absnCnt + " 일)");
+        $('#eapDocReg_docSubject').focus();
+}

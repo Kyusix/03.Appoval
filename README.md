@@ -30,56 +30,56 @@
 ### ■ 구현된 시스템 사용자 화면 예시 (서식명 클릭)
 
 <details>   
-  <summary>01. 견적발행품의서</summary>
+  <summary>01.견적발행품의서</summary>
   <br>
   <img src="https://github.com/user-attachments/assets/264c89b7-c300-4f51-b9b4-f96e27764c67" width="600" height="600"/>
 </details>
 
 <details>
-  <summary>02. 구매품의서  </summary>
+  <summary>02.구매품의서  </summary>
    <br>
    <img src="https://github.com/user-attachments/assets/0905a30a-0b16-433c-bfb0-98006cec4c26" width="600" height="650"/>
 </details>
 
 <details>
-  <summary>03. 발주품의서  </summary>
+  <summary>03.발주품의서  </summary>
    <br>
    <img src="https://github.com/user-attachments/assets/d574d519-1364-440a-8ec6-081ad7c5a6da" width="600" height="600"/>
 </details>
 
 <details>
-  <summary>04. 지출결의서  </summary>
+  <summary>04.지출결의서  </summary>
    <br>
    <img src="https://github.com/user-attachments/assets/76c4a845-1042-4704-9a10-05461f18eebd" width="600" height="650"/>
 </details>
 
 <details>
-  <summary>05. 매출계약품의서  </summary>
+  <summary>05.매출계약품의서  </summary>
    <br>
    <img src="https://github.com/user-attachments/assets/8421c43b-17f5-49e2-a34b-f28cdef47040" width="600" height="600"/>
 </details>
 
 <details>
-  <summary>06. 유지보수계약품의서  </summary>
+  <summary>06.유지보수계약품의서  </summary>
    <br>
    <img src="https://github.com/user-attachments/assets/5a2047ce-40cc-49d6-a8e0-3d9e4d94421c" width="600" height="440"/>
    <img src="https://github.com/user-attachments/assets/3c8f786c-7be0-40aa-a9ef-1068d426ed2b" width="600" height="600"/>
 </details>
 
 <details>
-  <summary>07. 사업제안입찰요청서  </summary>
+  <summary>07.사업제안입찰요청서  </summary>
    <br>
    <img src="https://github.com/user-attachments/assets/5cd26d11-5868-4e7c-ae24-4f7a12c37f43" width="600" height="600"/>
 </details>
 
 <details>
-  <summary>08. 외부근무신청서  </summary>
+  <summary>08.외부근무신청서  </summary>
    <br>
    <img src="https://github.com/user-attachments/assets/61920e97-9411-4cef-a802-15e91a757504" width="600" height="750"/>
 </details>
 
 <details>
-  <summary>10. 근태신청서  </summary>
+  <summary>09.근태신청서  </summary>
    <br>
    <img src="https://github.com/user-attachments/assets/32397552-4ffa-4d45-9289-7f8a706f2d25" width="600" height="500"/>
 </details>

@@ -38,7 +38,8 @@
 <details>
   <summary>02.구매품의서  </summary>
    <br>
-   <img src="https://github.com/user-attachments/assets/f69417c8-d26f-4c58-9aff-b4727cc13c1c">
+   <img src="https://github.com/user-attachments/assets/cdb7fc45-ab13-42ba-98ea-af2c5b27dd67">
+   <img src="https://github.com/user-attachments/assets/ae27162f-68bb-4565-9f48-42896b4e7e79">
 </details>
 
 <details>

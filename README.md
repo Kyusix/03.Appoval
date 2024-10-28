@@ -13,7 +13,7 @@
 - 스크립트 작성 적용예시 (예시업무 : 지출결의서)  
   : 각 결재서식 별 적용된 소스코드 전문은 'Approval/결재서식명' 소스공유
  
-   ![스크립트 적용화면](https://github.com/user-attachments/assets/c741daff-6182-4b67-b83f-52f8baba2386)
+   ![02  스크립트 적용화면](https://github.com/user-attachments/assets/29c80245-11db-46f5-8bad-cb53174cd1e6)
 
 
 ### ■ 적용효과
@@ -23,7 +23,7 @@
 - 문자열 뿐만 아니라 Radio, Select, Check, Calander(Date) 등 사용자 입력한 필드값으로 다른 필드 값을 자동생성  
   : ex) 수량, 단가 입력한 값을 기반으로 총액 자동계산
   
-- 승인된 데이터 항목 값 적재된 DB 테이블을 내부통제관리 목적 이기종 정보시스템(ERP, PMS, SW솔루션 등) 연계공유
+- 개별 데이터 필드 값 적재된 DB 테이블 내부통제관리 이기종 정보시스템(ERP, PMS, SW솔루션 등) 정보연계
 
 #
 
@@ -32,56 +32,56 @@
 <details>   
   <summary>01.견적발행품의서</summary>
   <br>
-  <img src="https://github.com/user-attachments/assets/264c89b7-c300-4f51-b9b4-f96e27764c67" width="600" height="600"/>
+  <img src="https://github.com/user-attachments/assets/237d1da5-bcc2-4545-80fe-a8299ec2ae78">
 </details>
 
 <details>
   <summary>02.구매품의서  </summary>
    <br>
-   <img src="https://github.com/user-attachments/assets/0905a30a-0b16-433c-bfb0-98006cec4c26" width="600" height="650"/>
+   <img src="https://github.com/user-attachments/assets/f69417c8-d26f-4c58-9aff-b4727cc13c1c">
 </details>
 
 <details>
   <summary>03.발주품의서  </summary>
    <br>
-   <img src="https://github.com/user-attachments/assets/d574d519-1364-440a-8ec6-081ad7c5a6da" width="600" height="600"/>
+   <img src="https://github.com/user-attachments/assets/fc600acf-8a44-4c64-ab33-ff53a025a9b1">
 </details>
 
 <details>
   <summary>04.지출결의서  </summary>
    <br>
-   <img src="https://github.com/user-attachments/assets/76c4a845-1042-4704-9a10-05461f18eebd" width="600" height="650"/>
+   <img src="https://github.com/user-attachments/assets/e58a55db-fbf5-48b1-9d21-d5b3d06829ea">
 </details>
 
 <details>
   <summary>05.매출계약품의서  </summary>
    <br>
-   <img src="https://github.com/user-attachments/assets/8421c43b-17f5-49e2-a34b-f28cdef47040" width="600" height="600"/>
+   <img src="https://github.com/user-attachments/assets/81b036c1-6803-4203-bc04-9ab979fdc15d">
 </details>
 
 <details>
   <summary>06.유지보수계약품의서  </summary>
    <br>
-   <img src="https://github.com/user-attachments/assets/5a2047ce-40cc-49d6-a8e0-3d9e4d94421c" width="600" height="440"/>
-   <img src="https://github.com/user-attachments/assets/3c8f786c-7be0-40aa-a9ef-1068d426ed2b" width="600" height="600"/>
+   <img src="https://github.com/user-attachments/assets/359c8271-9809-4bfc-86f2-3653274e4cbf">
+   <img src="https://github.com/user-attachments/assets/aa4a1cab-b84a-4c52-abb1-3f87a713ff72">
 </details>
 
 <details>
   <summary>07.사업제안입찰요청서  </summary>
    <br>
-   <img src="https://github.com/user-attachments/assets/5cd26d11-5868-4e7c-ae24-4f7a12c37f43" width="600" height="600"/>
+   <img src="https://github.com/user-attachments/assets/d5f3d08d-8d6c-4522-9252-642800c32b05">
 </details>
 
 <details>
   <summary>08.외부근무신청서  </summary>
    <br>
-   <img src="https://github.com/user-attachments/assets/61920e97-9411-4cef-a802-15e91a757504" width="600" height="750"/>
+   <img src="https://github.com/user-attachments/assets/52ed57ca-71f8-4744-8eb2-6597e4cee908">
 </details>
 
 <details>
   <summary>09.근태신청서  </summary>
    <br>
-   <img src="https://github.com/user-attachments/assets/32397552-4ffa-4d45-9289-7f8a706f2d25" width="600" height="500"/>
+   <img src="https://github.com/user-attachments/assets/40445e83-5a25-452c-9cda-e92de2fdfa41">
 </details>
 
 #### - 끝 -
